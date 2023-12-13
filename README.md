@@ -59,7 +59,7 @@
     - 알림은 [내가 작성한 리뷰에 '좋아요'가 눌렸을 때]와 같은 상황에 발생한다.
 
 ## ERD
-![ERD](doc/img/erd.png)
+![ERD](doc/img/erd.png) 
 
 ## Trouble Shooting
 [go to the trouble shooting section](doc/TROUBLE_SHOOTING.md)
