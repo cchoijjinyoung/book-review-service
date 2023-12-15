@@ -1,6 +1,7 @@
 package com.topy.bookreview.domain.entity;
 
 import com.topy.bookreview.domain.entity.type.RoleType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -18,14 +19,19 @@ public class Member extends BaseTimeEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @Column(nullable = false)
   private String email;
 
+  @Column(nullable = false)
   private String password;
 
+  @Column(nullable = false)
   private String nickname;
 
+  @Column(nullable = false)
   @Enumerated(EnumType.STRING)
   private RoleType role;
 
+  @Column(nullable = true)
   private LocalDateTime emailVerifiedDate;
 }

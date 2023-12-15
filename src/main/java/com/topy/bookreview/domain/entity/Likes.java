@@ -1,5 +1,6 @@
 package com.topy.bookreview.domain.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,9 +17,11 @@ public class Likes extends BaseTimeEntity {
   private Long id;
 
   @ManyToOne
+  @Column(nullable = false)
   private Review review;
 
   @ManyToOne
+  @Column(nullable = false)
   private Member member;
 
 }
