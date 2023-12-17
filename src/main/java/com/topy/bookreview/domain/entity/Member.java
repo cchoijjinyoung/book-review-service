@@ -27,13 +27,13 @@ public class Member extends BaseTimeEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(nullable = false)
+  @Column(nullable = false, unique = true)
   private String email;
 
   @Column(nullable = false)
   private String password;
 
-  @Column(nullable = false)
+  @Column(nullable = false, unique = true)
   private String nickname;
 
   @Column(nullable = false)
@@ -45,5 +45,6 @@ public class Member extends BaseTimeEntity {
 
   public void verified() {
     this.emailVerifiedAt = LocalDateTime.now();
+
   }
 }
