@@ -56,7 +56,7 @@ public class AuthService {
       throw new RuntimeException("이미 인증된 회원입니다.");
     }
 
-    if (!authCode.equals(memory.get(email))) {
+    if (authCode == null || !authCode.equals(memory.get(email))) {
       throw new RuntimeException("인증 코드가 올바르지 않습니다.");
     }
     findMember.verified();
