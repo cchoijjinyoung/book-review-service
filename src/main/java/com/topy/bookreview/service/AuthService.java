@@ -13,7 +13,6 @@ import com.topy.bookreview.domain.repository.MemberRepository;
 import com.topy.bookreview.dto.SignUpRequestDto;
 import com.topy.bookreview.dto.SignUpResponseDto;
 import com.topy.bookreview.exception.CustomException;
-import com.topy.bookreview.exception.ErrorCode;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -67,7 +66,6 @@ public class AuthService {
     if (authCode == null || !authCode.equals(memory.get(email))) {
       throw new CustomException(UNMATCHED_VERIFICATION_CODE);
     }
-
     findMember.verified();
   }
 }
