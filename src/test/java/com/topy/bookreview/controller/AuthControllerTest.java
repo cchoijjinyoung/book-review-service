@@ -8,21 +8,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.topy.bookreview.config.security.SecurityConfig;
-import com.topy.bookreview.domain.repository.MemberRepository;
 import com.topy.bookreview.dto.SignUpRequestDto;
-import com.topy.bookreview.dto.SignupResponseDto;
+import com.topy.bookreview.dto.SignUpResponseDto;
 import com.topy.bookreview.service.AuthService;
-import com.topy.bookreview.util.TokenProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
@@ -48,7 +42,7 @@ class AuthControllerTest {
   void signUpTest() throws Exception {
     // given
     given(authService.signUp(any())).willReturn(
-        SignupResponseDto.builder().nickname("nick").build());
+        SignUpResponseDto.builder().nickname("nick").build());
     // when
     SignUpRequestDto signUpRequestDto = new SignUpRequestDto(
         "foo@gmail.com", "bar", "nick");

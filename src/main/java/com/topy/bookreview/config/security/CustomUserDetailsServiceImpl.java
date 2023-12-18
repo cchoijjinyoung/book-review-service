@@ -1,7 +1,11 @@
 package com.topy.bookreview.config.security;
 
+import static com.topy.bookreview.exception.ErrorCode.*;
+
 import com.topy.bookreview.domain.entity.Member;
 import com.topy.bookreview.domain.repository.MemberRepository;
+import com.topy.bookreview.exception.CustomException;
+import com.topy.bookreview.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,7 +23,7 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
     log.info("loadUserByUsername = {}", username);
 
     Member findMember = memberRepository.findByEmail(username)
-        .orElseThrow(() -> new UsernameNotFoundException("user not found"));
+        .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
     CustomUserDetails customUserDetails = CustomUserDetails.of(findMember);
 
