@@ -43,9 +43,10 @@ class AuthControllerTest {
     // given
     given(authService.signUp(any())).willReturn(
         SignUpResponseDto.builder().nickname("nick").build());
+
     // when
-    SignUpRequestDto signUpRequestDto = new SignUpRequestDto(
-        "foo@gmail.com", "bar", "nick");
+    SignUpRequestDto signUpRequestDto =
+        new SignUpRequestDto("foo@gmail.com", "bar", "nick");
     // then
     mockMvc.perform(post("/auth/signup")
             .with(SecurityMockMvcRequestPostProcessors.csrf())

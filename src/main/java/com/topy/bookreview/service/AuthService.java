@@ -1,5 +1,6 @@
 package com.topy.bookreview.service;
 
+
 import static com.topy.bookreview.exception.ErrorCode.ALREADY_EXISTS_EMAIL;
 import static com.topy.bookreview.exception.ErrorCode.ALREADY_VERIFIED_USER;
 import static com.topy.bookreview.exception.ErrorCode.UNMATCHED_VERIFICATION_CODE;
@@ -12,6 +13,7 @@ import com.topy.bookreview.domain.repository.MemberRepository;
 import com.topy.bookreview.dto.SignUpRequestDto;
 import com.topy.bookreview.dto.SignUpResponseDto;
 import com.topy.bookreview.exception.CustomException;
+import com.topy.bookreview.exception.ErrorCode;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -58,13 +60,14 @@ public class AuthService {
     Member findMember = memberRepository.findByEmail(email)
         .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
-    if (findMember.getEmailVerifiedDate() != null) {
+    if (findMember.getEmailVerifiedAt() != null) {
       throw new CustomException(ALREADY_VERIFIED_USER);
     }
 
     if (authCode == null || !authCode.equals(memory.get(email))) {
       throw new CustomException(UNMATCHED_VERIFICATION_CODE);
     }
+
     findMember.verified();
   }
 }
