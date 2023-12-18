@@ -1,11 +1,17 @@
 package com.topy.bookreview.service;
 
+import static com.topy.bookreview.exception.ErrorCode.ALREADY_EXISTS_EMAIL;
+import static com.topy.bookreview.exception.ErrorCode.ALREADY_VERIFIED_USER;
+import static com.topy.bookreview.exception.ErrorCode.UNMATCHED_VERIFICATION_CODE;
+import static com.topy.bookreview.exception.ErrorCode.USER_NOT_FOUND;
+
 import com.topy.bookreview.components.mail.AuthMailForm;
 import com.topy.bookreview.components.mail.MailComponents;
 import com.topy.bookreview.domain.entity.Member;
 import com.topy.bookreview.domain.repository.MemberRepository;
 import com.topy.bookreview.dto.SignUpRequestDto;
-import com.topy.bookreview.dto.SignupResponseDto;
+import com.topy.bookreview.dto.SignUpResponseDto;
+import com.topy.bookreview.exception.CustomException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -29,9 +35,9 @@ public class AuthService {
   private final PasswordEncoder passwordEncoder;
 
   @Transactional
-  public SignupResponseDto signUp(SignUpRequestDto signUpRequestDto) {
+  public SignUpResponseDto signUp(SignUpRequestDto signUpRequestDto) {
     if (memberRepository.findByEmail(signUpRequestDto.getEmail()).isPresent()) {
-      throw new RuntimeException("이미 존재하는 이메일입니다.");
+      throw new CustomException(ALREADY_EXISTS_EMAIL);
     }
 
     String encodedPassword = passwordEncoder.encode(signUpRequestDto.getPassword());
@@ -44,22 +50,21 @@ public class AuthService {
     // TODO: Redis 사용
     memory.put(savedMember.getEmail(), authCode);
 
-    return SignupResponseDto.fromEntity(savedMember);
+    return SignUpResponseDto.fromEntity(savedMember);
   }
 
   @Transactional
   public void verify(String email, String authCode) {
     Member findMember = memberRepository.findByEmail(email)
-        .orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
+        .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
     if (findMember.getEmailVerifiedDate() != null) {
-      throw new RuntimeException("이미 인증된 회원입니다.");
+      throw new CustomException(ALREADY_VERIFIED_USER);
     }
 
     if (authCode == null || !authCode.equals(memory.get(email))) {
-      throw new RuntimeException("인증 코드가 올바르지 않습니다.");
+      throw new CustomException(UNMATCHED_VERIFICATION_CODE);
     }
     findMember.verified();
-    log.info("이메일 인증성공 ={}", findMember.getEmail());
   }
 }
