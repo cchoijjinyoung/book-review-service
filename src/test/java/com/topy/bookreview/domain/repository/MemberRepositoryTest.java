@@ -37,6 +37,6 @@ class MemberRepositoryTest {
     Assertions.assertThat(findMember.getPassword()).isEqualTo("bar");
     Assertions.assertThat(findMember.getNickname()).isEqualTo("nick");
     Assertions.assertThat(findMember.getRole()).isEqualTo(RoleType.USER);
-    Assertions.assertThat(findMember.getEmailVerifiedDate()).isNull();
+    Assertions.assertThat(findMember.getEmailVerifiedAt()).isNull();
   }
 }

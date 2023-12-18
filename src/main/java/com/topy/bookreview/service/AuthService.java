@@ -58,7 +58,7 @@ public class AuthService {
     Member findMember = memberRepository.findByEmail(email)
         .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
-    if (findMember.getEmailVerifiedDate() != null) {
+    if (findMember.getEmailVerifiedAt() != null) {
       throw new CustomException(ALREADY_VERIFIED_USER);
     }
 

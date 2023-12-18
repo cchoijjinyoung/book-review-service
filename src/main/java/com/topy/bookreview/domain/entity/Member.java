@@ -41,9 +41,9 @@ public class Member extends BaseTimeEntity {
   private RoleType role;
 
   @Column(nullable = true)
-  private LocalDateTime emailVerifiedDate;
+  private LocalDateTime emailVerifiedAt;
 
   public void verified() {
-    this.emailVerifiedDate = LocalDateTime.now();
+    this.emailVerifiedAt = LocalDateTime.now();
   }
 }
