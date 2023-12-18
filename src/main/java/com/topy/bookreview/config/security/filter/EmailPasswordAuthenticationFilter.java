@@ -63,7 +63,9 @@ public class EmailPasswordAuthenticationFilter extends AbstractAuthenticationPro
   }
 
   @Getter
-  private record EmailPassword(String email, String password) {
+  private static class EmailPassword {
+    private String email;
 
+    private String password;
   }
 }

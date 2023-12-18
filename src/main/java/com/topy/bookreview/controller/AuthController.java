@@ -22,9 +22,9 @@ public class AuthController {
     return ResponseEntity.ok(authService.signUp(signUpRequestDtos));
   }
 
-  @GetMapping("/auth/verify")
-  public String verify(@RequestParam String email, String authCode) {
+  @GetMapping("/mail/verify")
+  public ResponseEntity<?> verify(@RequestParam String email, String authCode) {
     authService.verify(email, authCode);
-    return "인증 완료";
+    return ResponseEntity.ok("인증이 완료되었습니다. 로그인해주세요");
   }
 }
