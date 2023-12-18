@@ -42,14 +42,12 @@ public class TokenProvider {
     Date now = new Date();
     Date expiredDate = new Date(now.getTime() + expiredMillis);
 
-    String accessToken = Jwts.builder()
+    return Jwts.builder()
         .subject(authentication.getName())
         .claim(ROLE_KEY, authentication.getAuthorities())
         .signWith(secretKey, SIG.HS256)
         .expiration(expiredDate)
         .issuedAt(now)
         .compact();
-
-    return accessToken;
   }
 }
