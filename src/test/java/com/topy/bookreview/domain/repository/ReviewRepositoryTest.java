@@ -36,7 +36,7 @@ class ReviewRepositoryTest {
         .password("author-password")
         .nickname("작성자닉네임")
         .role(RoleType.USER)
-        .emailVerifiedDate(emailVerifiedDate)
+        .emailVerifiedAt(emailVerifiedDate)
         .build());
 
     Review review = Review.builder()

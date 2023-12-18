@@ -42,7 +42,7 @@ class NotificationRepositoryTest {
         .password("receiver-password")
         .nickname("수신자닉네임")
         .role(RoleType.USER)
-        .emailVerifiedDate(emailVerifiedDate)
+        .emailVerifiedAt(emailVerifiedDate)
         .build());
 
     Member caller = memberRepository.save(Member.builder()
@@ -50,7 +50,7 @@ class NotificationRepositoryTest {
         .password("caller-password")
         .nickname("발신자닉네임")
         .role(RoleType.USER)
-        .emailVerifiedDate(emailVerifiedDate)
+        .emailVerifiedAt(emailVerifiedDate)
         .build());
 
     Review review = reviewRepository.save(Review.builder()

@@ -39,7 +39,7 @@ class LikesRepositoryTest {
         .password("author-password")
         .nickname("작성자닉네임")
         .role(RoleType.USER)
-        .emailVerifiedDate(emailVerifiedDate)
+        .emailVerifiedAt(emailVerifiedDate)
         .build());
 
     Member liker = memberRepository.save(Member.builder()
@@ -47,7 +47,7 @@ class LikesRepositoryTest {
         .password("liker-password")
         .nickname("좋아요닉네임")
         .role(RoleType.USER)
-        .emailVerifiedDate(emailVerifiedDate)
+        .emailVerifiedAt(emailVerifiedDate)
         .build());
 
     Review review = reviewRepository.save(Review.builder()
