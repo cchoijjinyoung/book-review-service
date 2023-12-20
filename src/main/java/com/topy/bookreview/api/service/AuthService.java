@@ -23,6 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 @Service
@@ -75,7 +76,7 @@ public class AuthService {
 
   public String reissueAccessToken(String refreshToken) {
     String storedToken = (String) redisUtils.get(refreshToken);
-    if (jwtUtils.isExpiredToken(storedToken)) {
+    if (!StringUtils.hasText(storedToken) || jwtUtils.isExpiredToken(storedToken)) {
       throw new CustomException(ErrorCode.EXPIRED_REFRESH_TOKEN);
     }
 

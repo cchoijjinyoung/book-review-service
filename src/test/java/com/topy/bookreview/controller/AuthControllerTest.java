@@ -53,7 +53,6 @@ class AuthControllerTest {
         new SignUpRequestDto("foo@gmail.com", "bar", "nick");
     // then
     mockMvc.perform(post("/auth/signup")
-            .with(SecurityMockMvcRequestPostProcessors.csrf())
             .contentType(MediaType.APPLICATION_JSON)
             .content(asJsonString(signUpRequestDto)))
         .andExpect(status().isCreated())
@@ -70,7 +69,6 @@ class AuthControllerTest {
     when(authService.reissueAccessToken(refreshToken)).thenReturn(newAccessToken);
     // then
     mockMvc.perform(post("/auth/token/reissue")
-            .with(SecurityMockMvcRequestPostProcessors.csrf())
             .cookie(new Cookie("refreshToken", refreshToken)))
         .andExpect(status().isOk())
         .andExpect(content().string(newAccessToken));

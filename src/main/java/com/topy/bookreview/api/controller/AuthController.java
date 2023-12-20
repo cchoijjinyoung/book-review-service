@@ -21,8 +21,8 @@ public class AuthController {
   private final AuthService authService;
 
   @PostMapping("/auth/signup")
-  public ResponseEntity<?> signUp(@RequestBody @Valid SignUpRequestDto signUpRequestDtos) {
-    return ResponseEntity.status(SC_CREATED).body(authService.signUp(signUpRequestDtos));
+  public ResponseEntity<?> signUp(@RequestBody @Valid SignUpRequestDto signUpRequestDto) {
+    return ResponseEntity.status(SC_CREATED).body(authService.signUp(signUpRequestDto));
   }
 
   @PostMapping("/auth/token/reissue")
