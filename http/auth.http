@@ -16,12 +16,3 @@ Content-Type: application/json
   "email": "cgy7127@gmail.com",
   "password": "bar"
 }
-
-### 잘못된 로그인 정보 입력
-POST http://localhost:8080/auth/signin
-Content-Type: application/json
-
-{
-  "email": "anonymous@gmail.com",
-  "password": "bar"
-}
