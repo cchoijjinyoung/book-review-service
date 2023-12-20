@@ -1,14 +1,13 @@
 package com.topy.bookreview.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.topy.bookreview.api.domain.repository.MemberRepository;
+import com.topy.bookreview.global.util.JwtUtils;
 import com.topy.bookreview.redis.RedisUtils;
-import com.topy.bookreview.security.CustomUserDetailsServiceImpl;
 import com.topy.bookreview.security.filter.EmailPasswordAuthenticationFilter;
 import com.topy.bookreview.security.filter.JwtAuthenticationFilter;
 import com.topy.bookreview.security.handler.LoginFailureHandler;
 import com.topy.bookreview.security.handler.LoginSuccessHandler;
-import com.topy.bookreview.api.domain.repository.MemberRepository;
-import com.topy.bookreview.global.util.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;

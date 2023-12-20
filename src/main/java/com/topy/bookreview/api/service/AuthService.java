@@ -6,20 +6,19 @@ import static com.topy.bookreview.global.exception.ErrorCode.ALREADY_EXISTS_EMAI
 import static com.topy.bookreview.global.exception.ErrorCode.UNMATCHED_VERIFICATION_CODE;
 import static com.topy.bookreview.global.exception.ErrorCode.USER_NOT_FOUND;
 
-import com.topy.bookreview.global.exception.ErrorCode;
-import com.topy.bookreview.global.util.JwtUtils;
-import com.topy.bookreview.global.util.mail.AuthMailForm;
-import com.topy.bookreview.global.util.mail.MailUtils;
 import com.topy.bookreview.api.domain.entity.Member;
 import com.topy.bookreview.api.domain.repository.MemberRepository;
 import com.topy.bookreview.api.dto.SignUpRequestDto;
 import com.topy.bookreview.api.dto.SignUpResponseDto;
 import com.topy.bookreview.global.exception.CustomException;
+import com.topy.bookreview.global.exception.ErrorCode;
+import com.topy.bookreview.global.util.JwtUtils;
+import com.topy.bookreview.global.util.mail.AuthMailForm;
+import com.topy.bookreview.global.util.mail.MailUtils;
 import com.topy.bookreview.redis.RedisUtils;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

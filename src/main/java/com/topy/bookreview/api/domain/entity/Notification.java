@@ -1,7 +1,7 @@
 package com.topy.bookreview.api.domain.entity;
 
-import com.topy.bookreview.api.domain.entity.type.TargetType;
 import com.topy.bookreview.api.domain.entity.type.NotificationType;
+import com.topy.bookreview.api.domain.entity.type.TargetType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

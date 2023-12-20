@@ -3,7 +3,6 @@ package com.topy.bookreview.global.util;
 import com.topy.bookreview.security.CustomUserDetails;
 import com.topy.bookreview.security.CustomUserDetailsServiceImpl;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Jwts.SIG;

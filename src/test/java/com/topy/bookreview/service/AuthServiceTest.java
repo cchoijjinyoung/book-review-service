@@ -8,22 +8,20 @@ import static com.topy.bookreview.global.exception.ErrorCode.USER_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.topy.bookreview.api.service.AuthService;
-import com.topy.bookreview.global.util.JwtUtils;
-import com.topy.bookreview.global.util.mail.AuthMailForm;
-import com.topy.bookreview.global.util.mail.MailUtils;
 import com.topy.bookreview.api.domain.entity.Member;
 import com.topy.bookreview.api.domain.entity.type.RoleType;
 import com.topy.bookreview.api.domain.repository.MemberRepository;
 import com.topy.bookreview.api.dto.SignUpRequestDto;
 import com.topy.bookreview.api.dto.SignUpResponseDto;
+import com.topy.bookreview.api.service.AuthService;
 import com.topy.bookreview.global.exception.CustomException;
+import com.topy.bookreview.global.util.JwtUtils;
+import com.topy.bookreview.global.util.mail.AuthMailForm;
+import com.topy.bookreview.global.util.mail.MailUtils;
 import com.topy.bookreview.redis.RedisUtils;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -33,14 +31,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.authentication.TestingAuthenticationToken;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {

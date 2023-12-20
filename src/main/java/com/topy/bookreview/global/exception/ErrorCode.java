@@ -3,7 +3,6 @@ package com.topy.bookreview.global.exception;
 
 import static jakarta.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static jakarta.servlet.http.HttpServletResponse.SC_CONFLICT;
-import static jakarta.servlet.http.HttpServletResponse.SC_NOT_ACCEPTABLE;
 import static jakarta.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 

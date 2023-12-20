@@ -1,6 +1,6 @@
 package com.topy.bookreview.security;
 
-import static com.topy.bookreview.global.exception.ErrorCode.*;
+import static com.topy.bookreview.global.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.topy.bookreview.api.domain.entity.Member;
 import com.topy.bookreview.api.domain.repository.MemberRepository;
