@@ -1,4 +1,4 @@
-package com.topy.bookreview.global.util.mail;
+package com.topy.bookreview.global.manager.mail;
 
 import lombok.Getter;
 
