@@ -3,38 +3,36 @@ package com.topy.bookreview.api.service;
 
 import static com.topy.bookreview.global.exception.ErrorCode.ALREADY_EMAIL_VERIFIED_USER;
 import static com.topy.bookreview.global.exception.ErrorCode.ALREADY_EXISTS_EMAIL;
-import static com.topy.bookreview.global.exception.ErrorCode.UNMATCHED_VERIFICATION_CODE;
+import static com.topy.bookreview.global.exception.ErrorCode.EXPIRED_AUTH_CODE;
+import static com.topy.bookreview.global.exception.ErrorCode.UNMATCHED_AUTH_CODE;
 import static com.topy.bookreview.global.exception.ErrorCode.USER_NOT_FOUND;
+import static com.topy.bookreview.global.type.ExpiryTime.AUTH_EMAIL_VERIFICATION;
 
 import com.topy.bookreview.api.domain.entity.Member;
 import com.topy.bookreview.api.domain.repository.MemberRepository;
 import com.topy.bookreview.api.dto.SignUpRequestDto;
 import com.topy.bookreview.api.dto.SignUpResponseDto;
 import com.topy.bookreview.global.exception.CustomException;
-import com.topy.bookreview.global.exception.ErrorCode;
-import com.topy.bookreview.global.util.JwtUtils;
-import com.topy.bookreview.global.util.mail.AuthMailForm;
-import com.topy.bookreview.global.util.mail.MailUtils;
-import com.topy.bookreview.redis.RedisUtils;
+import com.topy.bookreview.global.manager.mail.AuthMailForm;
+import com.topy.bookreview.global.manager.mail.MailSenderManager;
+import com.topy.bookreview.redis.RedisManager;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
-  private final MailUtils mailUtils;
+  private final MailSenderManager mailSenderManager;
 
-  private final RedisUtils redisUtils;
-
-  private final JwtUtils jwtUtils;
+  private final RedisManager redisManager;
 
   private final MemberRepository memberRepository;
 
@@ -51,14 +49,14 @@ public class AuthService {
     Member savedMember = memberRepository.save(signUpRequestDto.toEntity(encodedPassword));
 
     String authCode = UUID.randomUUID().toString();
-    mailUtils.sendMail(new AuthMailForm(savedMember.getEmail(), authCode));
-    redisUtils.save(savedMember.getEmail(), authCode);
+    mailSenderManager.sendMail(new AuthMailForm(savedMember.getEmail(), authCode));
+    redisManager.save(savedMember.getEmail(), authCode, AUTH_EMAIL_VERIFICATION.getExpiryTimeMillis());
 
     return SignUpResponseDto.fromEntity(savedMember);
   }
 
   @Transactional
-  public void mailVerify(String email, String authCode) {
+  public void mailVerify(String email, String authCode, long timeStamp) {
     Member findMember = memberRepository.findByEmail(email)
         .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
@@ -66,21 +64,16 @@ public class AuthService {
       throw new CustomException(ALREADY_EMAIL_VERIFIED_USER);
     }
 
-    String storedAuthCode = (String) redisUtils.get(email);
+    String storedAuthCode = (String) redisManager.get(email);
+    Long expiredTtlMillis = redisManager.getExpire(email, TimeUnit.MILLISECONDS);
+
+    if (ObjectUtils.isEmpty(storedAuthCode) || expiredTtlMillis == null || timeStamp > expiredTtlMillis) {
+      throw new CustomException(EXPIRED_AUTH_CODE);
+    }
 
     if (authCode == null || !authCode.equals(storedAuthCode)) {
-      throw new CustomException(UNMATCHED_VERIFICATION_CODE);
+      throw new CustomException(UNMATCHED_AUTH_CODE);
     }
     findMember.verified();
-  }
-
-  public String reissueAccessToken(String refreshToken) {
-    String storedToken = (String) redisUtils.get(refreshToken);
-    if (!StringUtils.hasText(storedToken) || jwtUtils.isExpiredToken(storedToken)) {
-      throw new CustomException(ErrorCode.EXPIRED_REFRESH_TOKEN);
-    }
-
-    Authentication authentication = jwtUtils.createAuthentication(refreshToken);
-    return jwtUtils.generateAccessToken(authentication);
   }
 }
