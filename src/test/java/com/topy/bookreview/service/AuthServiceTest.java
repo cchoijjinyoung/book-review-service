@@ -2,8 +2,7 @@ package com.topy.bookreview.service;
 
 import static com.topy.bookreview.global.exception.ErrorCode.ALREADY_EMAIL_VERIFIED_USER;
 import static com.topy.bookreview.global.exception.ErrorCode.ALREADY_EXISTS_EMAIL;
-import static com.topy.bookreview.global.exception.ErrorCode.EXPIRED_REFRESH_TOKEN;
-import static com.topy.bookreview.global.exception.ErrorCode.UNMATCHED_VERIFICATION_CODE;
+import static com.topy.bookreview.global.exception.ErrorCode.UNMATCHED_AUTH_CODE;
 import static com.topy.bookreview.global.exception.ErrorCode.USER_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -19,20 +18,20 @@ import com.topy.bookreview.api.dto.SignUpRequestDto;
 import com.topy.bookreview.api.dto.SignUpResponseDto;
 import com.topy.bookreview.api.service.AuthService;
 import com.topy.bookreview.global.exception.CustomException;
-import com.topy.bookreview.global.util.JwtUtils;
-import com.topy.bookreview.global.util.mail.AuthMailForm;
-import com.topy.bookreview.global.util.mail.MailUtils;
-import com.topy.bookreview.redis.RedisUtils;
+import com.topy.bookreview.global.manager.JwtManager;
+import com.topy.bookreview.global.manager.mail.AuthMailForm;
+import com.topy.bookreview.global.manager.mail.MailSenderManager;
+import com.topy.bookreview.redis.RedisManager;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoField;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.authentication.TestingAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,13 +41,13 @@ class AuthServiceTest {
   MemberRepository memberRepository;
 
   @Mock
-  MailUtils mailUtils;
+  MailSenderManager mailSenderManager;
 
   @Mock
-  RedisUtils redisUtils;
+  RedisManager redisManager;
 
   @Mock
-  JwtUtils jwtUtils;
+  JwtManager jwtManager;
 
   @Mock
   PasswordEncoder passwordEncoder;
@@ -76,7 +75,7 @@ class AuthServiceTest {
 
   @Test
   @DisplayName("회원가입이 완료되면 nickname을 응답한다.")
-  void passwordEncodingTest() {
+  void signUp_success() {
 
     // given
     SignUpRequestDto signUpRequestDto = new SignUpRequestDto(
@@ -89,8 +88,8 @@ class AuthServiceTest {
     Member savedMember = verifiedMember();
     when(memberRepository.save(any(Member.class))).thenReturn(savedMember);
 
-    doNothing().when(mailUtils).sendMail(any(AuthMailForm.class));
-    doNothing().when(redisUtils).save(any(String.class), any(String.class));
+    doNothing().when(mailSenderManager).sendMail(any(AuthMailForm.class));
+    doNothing().when(redisManager).save(any(String.class), any(String.class), any(Long.class));
 
     // when
     SignUpResponseDto signUpResponseDto = authService
@@ -100,8 +99,8 @@ class AuthServiceTest {
     assertThat(signUpResponseDto).isNotNull();
     assertThat(signUpResponseDto.getNickname()).isEqualTo("bar");
 
-    verify(mailUtils).sendMail(any(AuthMailForm.class));
-    verify(redisUtils).save(any(String.class), any(String.class));
+    verify(mailSenderManager).sendMail(any(AuthMailForm.class));
+    verify(redisManager).save(any(String.class), any(String.class), any(Long.class));
   }
 
   @Test
@@ -110,10 +109,11 @@ class AuthServiceTest {
     // given
     String email = "foo@gmail.com";
     String authCode = "123456";
+    long timeStamp = LocalDateTime.now().getLong(ChronoField.MILLI_OF_SECOND);
     when(memberRepository.findByEmail(any())).thenReturn(Optional.empty());
     // when
     // then
-    assertThatThrownBy(() -> authService.mailVerify(email, authCode))
+    assertThatThrownBy(() -> authService.mailVerify(email, authCode, timeStamp))
         .isInstanceOf(CustomException.class)
         .hasMessage(USER_NOT_FOUND.getMessage());
   }
@@ -124,12 +124,13 @@ class AuthServiceTest {
     // given
     String email = "foo@gmail.com";
     String authCode = "123456";
+    long timeStamp = LocalDateTime.now().getLong(ChronoField.MILLI_OF_SECOND);
 
     Member member = verifiedMember();
     when(memberRepository.findByEmail(any())).thenReturn(Optional.of(member));
     // when
     // then
-    assertThatThrownBy(() -> authService.mailVerify(email, authCode))
+    assertThatThrownBy(() -> authService.mailVerify(email, authCode, timeStamp))
         .isInstanceOf(CustomException.class)
         .hasMessage(ALREADY_EMAIL_VERIFIED_USER.getMessage());
   }
@@ -141,16 +142,21 @@ class AuthServiceTest {
     String email = "foo@gmail.com";
     String authCode = "123456";
     String storedAuthCode = "654321";
+    LocalDateTime requestTime = LocalDateTime.now();
+    LocalDateTime storedTime = requestTime.plusHours(24);
+    long requestTimeLong = requestTime.getLong(ChronoField.MILLI_OF_SECOND);
+    long storedTimeLong = storedTime.getLong(ChronoField.MILLI_OF_SECOND);
 
     Member member = unVerifiedMember();
     when(memberRepository.findByEmail(any())).thenReturn(Optional.of(member));
 
-    when(redisUtils.get(email)).thenReturn(storedAuthCode);
+    when(redisManager.get(email)).thenReturn(storedAuthCode);
+    when(redisManager.getExpire(email, TimeUnit.MILLISECONDS)).thenReturn(storedTimeLong);
     // when
     // then
-    assertThatThrownBy(() -> authService.mailVerify(email, authCode))
+    assertThatThrownBy(() -> authService.mailVerify(email, authCode, requestTimeLong))
         .isInstanceOf(CustomException.class)
-        .hasMessage(UNMATCHED_VERIFICATION_CODE.getMessage());
+        .hasMessage(UNMATCHED_AUTH_CODE.getMessage());
   }
 
   @Test
@@ -159,52 +165,19 @@ class AuthServiceTest {
     // given
     String email = "foo@gmail.com";
     String authCode = "123456";
+    LocalDateTime requestTime = LocalDateTime.now();
+    LocalDateTime storedTime = requestTime.plusHours(24);
+    long requestTimeLong = requestTime.getLong(ChronoField.MILLI_OF_SECOND);
+    long storedTimeLong = storedTime.getLong(ChronoField.MILLI_OF_SECOND);
     String storedAuthCode = "123456";
     Member member = unVerifiedMember();
     // when
     when(memberRepository.findByEmail(email)).thenReturn(Optional.of(member));
-    when(redisUtils.get(email)).thenReturn(storedAuthCode);
+    when(redisManager.get(email)).thenReturn(storedAuthCode);
+    when(redisManager.getExpire(email, TimeUnit.MILLISECONDS)).thenReturn(storedTimeLong);
     // then
-    authService.mailVerify(email, authCode);
+    authService.mailVerify(email, authCode, requestTimeLong);
     assertThat(member.getEmailVerifiedAt()).isNotNull();
-  }
-
-  @Test
-  @DisplayName("❗리프래시 토큰이 만료됐으면 실패한다.")
-  void reissueAccessToken_fail_tokenExpired() {
-    // given
-    String refreshToken = "12345";
-    String storedToken = "12345";
-
-    // when
-    when(redisUtils.get(refreshToken)).thenReturn(storedToken);
-    when(jwtUtils.isExpiredToken(storedToken)).thenReturn(true);
-
-    // then
-    assertThatThrownBy(() -> authService.reissueAccessToken(refreshToken))
-        .isInstanceOf(CustomException.class)
-        .hasMessage(EXPIRED_REFRESH_TOKEN.getMessage());
-  }
-
-  @Test
-  @DisplayName("액세스토큰 재발급에 성공하면 액세스토큰을 응답한다.")
-  void reissueAccessToken_success() {
-    // given
-    String refreshToken = "12345";
-    String storedToken = "12345";
-    String accessToken = "54321";
-
-    // when
-    when(redisUtils.get(refreshToken)).thenReturn(storedToken);
-    when(jwtUtils.isExpiredToken(storedToken)).thenReturn(false);
-
-    Authentication authentication = new TestingAuthenticationToken("test", "test");
-    when(jwtUtils.createAuthentication(refreshToken)).thenReturn(authentication);
-    when(jwtUtils.generateAccessToken(authentication)).thenReturn(accessToken);
-
-    String result = authService.reissueAccessToken(refreshToken);
-
-    assertThat(accessToken).isEqualTo(result);
   }
 
   private Member verifiedMember() {
