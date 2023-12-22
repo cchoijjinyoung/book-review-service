@@ -1,8 +1,5 @@
 package com.topy.bookreview.global.manager;
 
-import static com.topy.bookreview.global.type.ExpiryTime.ACCESS_TOKEN;
-import static com.topy.bookreview.global.type.ExpiryTime.REFRESH_TOKEN;
-
 import com.topy.bookreview.global.exception.CustomException;
 import com.topy.bookreview.global.exception.ErrorCode;
 import com.topy.bookreview.security.CustomUserDetails;
@@ -40,8 +37,8 @@ public class JwtManager {
 
   private JwtParser parser;
 
-  private static final long ACCESS_TOKEN_EXPIRY_MILLIS = ACCESS_TOKEN.getExpiryTimeMillis();
-  private static final long REFRESH_TOKEN_EXPIRY_MILLIS = REFRESH_TOKEN.getExpiryTimeMillis();
+  private static final long ACCESS_TOKEN_EXPIRY_MILLIS = 1000 * 60 * 60 * 3;
+  private static final long REFRESH_TOKEN_EXPIRY_MILLIS = 1000 * 60 * 60 * 24 * 14;
 
   private static final String ROLE_KEY = "roles";
 

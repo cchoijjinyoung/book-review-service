@@ -18,14 +18,12 @@ import com.topy.bookreview.api.dto.SignUpRequestDto;
 import com.topy.bookreview.api.dto.SignUpResponseDto;
 import com.topy.bookreview.api.service.AuthService;
 import com.topy.bookreview.global.exception.CustomException;
-import com.topy.bookreview.global.manager.JwtManager;
 import com.topy.bookreview.global.manager.mail.AuthMailForm;
 import com.topy.bookreview.global.manager.mail.MailSenderManager;
-import com.topy.bookreview.redis.RedisManager;
+import com.topy.bookreview.redis.repository.AuthCodeRedisRepository;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,10 +42,7 @@ class AuthServiceTest {
   MailSenderManager mailSenderManager;
 
   @Mock
-  RedisManager redisManager;
-
-  @Mock
-  JwtManager jwtManager;
+  AuthCodeRedisRepository authCodeRedisRepository;
 
   @Mock
   PasswordEncoder passwordEncoder;
@@ -89,7 +84,7 @@ class AuthServiceTest {
     when(memberRepository.save(any(Member.class))).thenReturn(savedMember);
 
     doNothing().when(mailSenderManager).sendMail(any(AuthMailForm.class));
-    doNothing().when(redisManager).save(any(String.class), any(String.class), any(Long.class));
+    doNothing().when(authCodeRedisRepository).saveByEmail(any(String.class), any(String.class));
 
     // when
     SignUpResponseDto signUpResponseDto = authService
@@ -100,7 +95,7 @@ class AuthServiceTest {
     assertThat(signUpResponseDto.getNickname()).isEqualTo("bar");
 
     verify(mailSenderManager).sendMail(any(AuthMailForm.class));
-    verify(redisManager).save(any(String.class), any(String.class), any(Long.class));
+    verify(authCodeRedisRepository).saveByEmail(any(String.class), any(String.class));
   }
 
   @Test
@@ -150,8 +145,8 @@ class AuthServiceTest {
     Member member = unVerifiedMember();
     when(memberRepository.findByEmail(any())).thenReturn(Optional.of(member));
 
-    when(redisManager.get(email)).thenReturn(storedAuthCode);
-    when(redisManager.getExpire(email, TimeUnit.MILLISECONDS)).thenReturn(storedTimeLong);
+    when(authCodeRedisRepository.getByEmail(email)).thenReturn(storedAuthCode);
+    when(authCodeRedisRepository.getExpireByEmail(email)).thenReturn(storedTimeLong);
     // when
     // then
     assertThatThrownBy(() -> authService.mailVerify(email, authCode, requestTimeLong))
@@ -173,8 +168,8 @@ class AuthServiceTest {
     Member member = unVerifiedMember();
     // when
     when(memberRepository.findByEmail(email)).thenReturn(Optional.of(member));
-    when(redisManager.get(email)).thenReturn(storedAuthCode);
-    when(redisManager.getExpire(email, TimeUnit.MILLISECONDS)).thenReturn(storedTimeLong);
+    when(authCodeRedisRepository.getByEmail(email)).thenReturn(storedAuthCode);
+    when(authCodeRedisRepository.getExpireByEmail(email)).thenReturn(storedTimeLong);
     // then
     authService.mailVerify(email, authCode, requestTimeLong);
     assertThat(member.getEmailVerifiedAt()).isNotNull();

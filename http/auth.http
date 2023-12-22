@@ -19,7 +19,7 @@ Content-Type: application/json
 
 ### 로그아웃
 GET http://localhost:8080/auth/signout
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjZ3k3MTI3QGdtYWlsLmNvbSIsImV4cCI6MTcwMzE5NTAwMCwiaWF0IjoxNzAzMTkxNDAwfQ.igpZV-Jz2R4CQl-4CTE82bsuayubCRXNWBXMJvoHFsE
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjZ3k3MTI3QGdtYWlsLmNvbSIsImV4cCI6MTcwMzI1NzkzOCwiaWF0IjoxNzAzMjU0MzM4fQ.DP0xp3TP2mmlH5z-Fu58oElYJMDrmSpj_sDqvexduSI
 
 ### 디폴트 로그아웃
 GET http://localhost:8080/logout

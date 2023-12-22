@@ -3,8 +3,7 @@ package com.topy.bookreview.security.handler;
 import static jakarta.servlet.http.HttpServletResponse.SC_OK;
 
 import com.topy.bookreview.global.manager.JwtManager;
-import com.topy.bookreview.global.type.ExpiryTime;
-import com.topy.bookreview.redis.RedisManager;
+import com.topy.bookreview.redis.repository.RefreshTokenRedisRepository;
 import com.topy.bookreview.security.CustomUserDetails;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -22,11 +21,11 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
   private final static String TOKEN_HEADER = "Authorization";
   private final static String TOKEN_PREFIX = "Bearer ";
-  private final static String REFRESH_TOKEN = "refreshToken";
+  private final static String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
   private final JwtManager jwtManager;
 
-  private final RedisManager redisManager;
+  private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -39,9 +38,9 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     String accessToken = jwtManager.generateAccessToken(authentication);
     String refreshToken = jwtManager.generateRefreshToken(authentication);
 
-    redisManager.save(refreshToken, refreshToken, ExpiryTime.REFRESH_TOKEN.getExpiryTimeMillis());
+    refreshTokenRedisRepository.save(refreshToken);
 
-    Cookie refreshTokenCookie = new Cookie(REFRESH_TOKEN, refreshToken);
+    Cookie refreshTokenCookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken);
     refreshTokenCookie.setHttpOnly(true);
     refreshTokenCookie.setSecure(true);
     refreshTokenCookie.setPath("/");
