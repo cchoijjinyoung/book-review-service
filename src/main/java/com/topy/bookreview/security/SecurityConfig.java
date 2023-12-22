@@ -2,12 +2,16 @@ package com.topy.bookreview.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.topy.bookreview.api.domain.repository.MemberRepository;
-import com.topy.bookreview.global.util.JwtUtils;
-import com.topy.bookreview.redis.RedisUtils;
+import com.topy.bookreview.global.manager.JwtManager;
+import com.topy.bookreview.redis.RedisManager;
 import com.topy.bookreview.security.filter.EmailPasswordAuthenticationFilter;
 import com.topy.bookreview.security.filter.JwtAuthenticationFilter;
+import com.topy.bookreview.security.handler.CustomLogoutHandler;
+import com.topy.bookreview.security.handler.CustomLogoutSuccessHandler;
+import com.topy.bookreview.security.handler.ForbiddenHandler;
 import com.topy.bookreview.security.handler.LoginFailureHandler;
 import com.topy.bookreview.security.handler.LoginSuccessHandler;
+import com.topy.bookreview.security.handler.UnAuthorizedHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -35,8 +39,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-  private final JwtUtils jwtUtils;
-  private final RedisUtils redisUtils;
+  private final JwtManager jwtManager;
+  private final RedisManager redisManager;
   private final ObjectMapper objectMapper;
   private final MemberRepository memberRepository;
 
@@ -49,25 +53,36 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http
+    return http
         .formLogin(AbstractHttpConfigurer::disable)
         .httpBasic(AbstractHttpConfigurer::disable)
         .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .csrf(AbstractHttpConfigurer::disable);
-
-    http
+        .csrf(AbstractHttpConfigurer::disable)
+        .logout(c -> c
+            .logoutUrl("/auth/signout")
+            .logoutSuccessUrl("/login")
+            .addLogoutHandler(new CustomLogoutHandler(redisManager))
+            .logoutSuccessHandler(new CustomLogoutSuccessHandler()))
+        .exceptionHandling(e -> {
+              e.accessDeniedHandler(new ForbiddenHandler(objectMapper));
+              e.authenticationEntryPoint(new UnAuthorizedHandler(objectMapper));
+            }
+        )
         .authorizeHttpRequests(authorize -> authorize
             .requestMatchers(
                 new AntPathRequestMatcher("/"),
+                new AntPathRequestMatcher("/logout"),
+                new AntPathRequestMatcher("/auth/logout"),
                 new AntPathRequestMatcher("/auth/signup"),
                 new AntPathRequestMatcher("/auth/signin")
             ).permitAll()
 
-            .anyRequest().authenticated());
-    http
-        .addFilterBefore(emailPasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-        .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-    return http.build();
+            .anyRequest().authenticated())
+        .addFilterBefore(emailPasswordAuthenticationFilter(),
+            UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(jwtAuthenticationFilter(),
+            UsernamePasswordAuthenticationFilter.class)
+        .build();
   }
 
   @Bean
@@ -76,14 +91,14 @@ public class SecurityConfig {
         new AntPathRequestMatcher("/auth/signin", "POST"),
         authenticationManager(), objectMapper);
 
-    filter.setAuthenticationSuccessHandler(new LoginSuccessHandler(jwtUtils, redisUtils, objectMapper));
+    filter.setAuthenticationSuccessHandler(new LoginSuccessHandler(jwtManager, redisManager));
     filter.setAuthenticationFailureHandler(new LoginFailureHandler(objectMapper));
     return filter;
   }
 
   @Bean
   public JwtAuthenticationFilter jwtAuthenticationFilter() {
-    return new JwtAuthenticationFilter(jwtUtils);
+    return new JwtAuthenticationFilter(jwtManager, redisManager);
   }
 
   @Bean

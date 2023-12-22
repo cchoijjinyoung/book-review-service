@@ -1,12 +1,10 @@
 package com.topy.bookreview.security.handler;
 
 import static jakarta.servlet.http.HttpServletResponse.SC_OK;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.topy.bookreview.global.util.JwtUtils;
-import com.topy.bookreview.redis.RedisUtils;
+import com.topy.bookreview.global.manager.JwtManager;
+import com.topy.bookreview.global.type.ExpiryTime;
+import com.topy.bookreview.redis.RedisManager;
 import com.topy.bookreview.security.CustomUserDetails;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -22,38 +20,34 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 @RequiredArgsConstructor
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
-  private final JwtUtils jwtUtils;
+  private final static String TOKEN_HEADER = "Authorization";
+  private final static String TOKEN_PREFIX = "Bearer ";
+  private final static String REFRESH_TOKEN = "refreshToken";
 
-  private final RedisUtils redisUtils;
+  private final JwtManager jwtManager;
 
-  private final ObjectMapper objectMapper;
+  private final RedisManager redisManager;
 
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
       Authentication authentication) throws IOException, ServletException {
 
-    CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+    CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
 
-    log.info("[인증성공] user={}", customUserDetails.getEmail());
-    log.info("authentication.getName()={}", authentication.getName());
+    log.info("로그인에 성공하였습니다. user={}", principal.getUsername());
 
+    String accessToken = jwtManager.generateAccessToken(authentication);
+    String refreshToken = jwtManager.generateRefreshToken(authentication);
 
-    String accessToken = jwtUtils.generateAccessToken(authentication);
-    String refreshToken = jwtUtils.generateRefreshToken(authentication);
+    redisManager.save(refreshToken, refreshToken, ExpiryTime.REFRESH_TOKEN.getExpiryTimeMillis());
 
-
-    redisUtils.save(refreshToken, refreshToken);
-    Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+    Cookie refreshTokenCookie = new Cookie(REFRESH_TOKEN, refreshToken);
     refreshTokenCookie.setHttpOnly(true);
     refreshTokenCookie.setSecure(true);
     refreshTokenCookie.setPath("/");
 
-    String accessTokenJson = objectMapper.writeValueAsString(accessToken);
-
     response.setStatus(SC_OK);
-    response.setContentType(APPLICATION_JSON_VALUE);
-    response.setCharacterEncoding(UTF_8.name());
+    response.setHeader(TOKEN_HEADER, TOKEN_PREFIX + accessToken);
     response.addCookie(refreshTokenCookie);
-    objectMapper.writeValue(response.getWriter(), accessTokenJson);
   }
 }

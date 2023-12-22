@@ -7,7 +7,6 @@ import com.topy.bookreview.api.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,15 +24,9 @@ public class AuthController {
     return ResponseEntity.status(SC_CREATED).body(authService.signUp(signUpRequestDto));
   }
 
-  @PostMapping("/auth/token/reissue")
-  public ResponseEntity<?> reissueAccessToken(@CookieValue("refreshToken") String refreshToken) {
-    String newAccessToken = authService.reissueAccessToken(refreshToken);
-    return ResponseEntity.ok(newAccessToken);
-  }
-
   @GetMapping("/auth/mail/verify")
-  public ResponseEntity<?> mailVerify(@RequestParam String email, String authCode) {
-    authService.mailVerify(email, authCode);
+  public ResponseEntity<?> mailVerify(@RequestParam String email, String authCode, long timeStamp) {
+    authService.mailVerify(email, authCode, timeStamp);
     return ResponseEntity.ok("인증이 완료됐습니다.");
   }
 }

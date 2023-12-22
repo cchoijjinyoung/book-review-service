@@ -1,8 +1,7 @@
-package com.topy.bookreview.global.util.mail;
+package com.topy.bookreview.global.manager.mail;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
@@ -11,17 +10,13 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class MailUtils {
+public class MailSenderManager {
 
   private final JavaMailSender mailSender;
-
-  @Value("${spring.mail.username}")
-  private String sender;
 
   public void sendMail(EmailForm email) {
     MimeMessagePreparator msg = mimeMessage -> {
       MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-      mimeMessageHelper.setFrom(sender);
       mimeMessageHelper.setTo(email.getRecipient());
       mimeMessageHelper.setSubject(email.getSubject());
       mimeMessageHelper.setText(email.getText(), true);

@@ -16,3 +16,19 @@ Content-Type: application/json
   "email": "cgy7127@gmail.com",
   "password": "bar"
 }
+
+### 로그아웃
+GET http://localhost:8080/auth/signout
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjZ3k3MTI3QGdtYWlsLmNvbSIsImV4cCI6MTcwMzE5NTAwMCwiaWF0IjoxNzAzMTkxNDAwfQ.igpZV-Jz2R4CQl-4CTE82bsuayubCRXNWBXMJvoHFsE
+
+### 디폴트 로그아웃
+GET http://localhost:8080/logout
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjZ3k3MTI3QGdtYWlsLmNvbSIsImV4cCI6MTcwMzE5NDYzNCwiaWF0IjoxNzAzMTkxMDM0fQ.gzwLRzj8eVu9m-V0EUbB3EAiUR5f80C0-nJp2Qn9Ns8
+
+### 책 검색
+POST http://localhost:8080/client/test
+Content-Type: application/json
+
+{
+  "keyword": "asd"
+}
