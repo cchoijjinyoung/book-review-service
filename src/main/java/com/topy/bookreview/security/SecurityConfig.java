@@ -3,7 +3,7 @@ package com.topy.bookreview.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.topy.bookreview.api.domain.repository.MemberRepository;
 import com.topy.bookreview.global.manager.JwtManager;
-import com.topy.bookreview.redis.RedisManager;
+import com.topy.bookreview.redis.repository.RefreshTokenRedisRepository;
 import com.topy.bookreview.security.filter.EmailPasswordAuthenticationFilter;
 import com.topy.bookreview.security.filter.JwtAuthenticationFilter;
 import com.topy.bookreview.security.handler.CustomLogoutHandler;
@@ -40,9 +40,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityConfig {
 
   private final JwtManager jwtManager;
-  private final RedisManager redisManager;
   private final ObjectMapper objectMapper;
   private final MemberRepository memberRepository;
+  private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
   @Bean
   public WebSecurityCustomizer webSecurityCustomizer() {
@@ -60,8 +60,7 @@ public class SecurityConfig {
         .csrf(AbstractHttpConfigurer::disable)
         .logout(c -> c
             .logoutUrl("/auth/signout")
-            .logoutSuccessUrl("/login")
-            .addLogoutHandler(new CustomLogoutHandler(redisManager))
+            .addLogoutHandler(new CustomLogoutHandler(refreshTokenRedisRepository))
             .logoutSuccessHandler(new CustomLogoutSuccessHandler()))
         .exceptionHandling(e -> {
               e.accessDeniedHandler(new ForbiddenHandler(objectMapper));
@@ -71,7 +70,6 @@ public class SecurityConfig {
         .authorizeHttpRequests(authorize -> authorize
             .requestMatchers(
                 new AntPathRequestMatcher("/"),
-                new AntPathRequestMatcher("/logout"),
                 new AntPathRequestMatcher("/auth/logout"),
                 new AntPathRequestMatcher("/auth/signup"),
                 new AntPathRequestMatcher("/auth/signin")
@@ -91,14 +89,15 @@ public class SecurityConfig {
         new AntPathRequestMatcher("/auth/signin", "POST"),
         authenticationManager(), objectMapper);
 
-    filter.setAuthenticationSuccessHandler(new LoginSuccessHandler(jwtManager, redisManager));
+    filter.setAuthenticationSuccessHandler(
+        new LoginSuccessHandler(jwtManager, refreshTokenRedisRepository));
     filter.setAuthenticationFailureHandler(new LoginFailureHandler(objectMapper));
     return filter;
   }
 
   @Bean
   public JwtAuthenticationFilter jwtAuthenticationFilter() {
-    return new JwtAuthenticationFilter(jwtManager, redisManager);
+    return new JwtAuthenticationFilter(jwtManager, refreshTokenRedisRepository);
   }
 
   @Bean

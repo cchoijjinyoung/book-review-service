@@ -5,7 +5,7 @@ import static com.topy.bookreview.global.exception.ErrorCode.EXPIRED_REFRESH_TOK
 import com.topy.bookreview.global.exception.CustomException;
 import com.topy.bookreview.global.manager.JwtManager;
 import com.topy.bookreview.global.util.CookieUtils;
-import com.topy.bookreview.redis.RedisManager;
+import com.topy.bookreview.redis.repository.RefreshTokenRedisRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,7 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   private final static String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
   private final JwtManager jwtManager;
-  private final RedisManager redisManager;
+  private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -43,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (jwtManager.isExpiredToken(refreshToken)) {
           log.info("Expired refreshToken = {}", refreshToken);
-          redisManager.delete(refreshToken);
+          refreshTokenRedisRepository.delete(refreshToken);
           throw new CustomException(EXPIRED_REFRESH_TOKEN);
         }
 

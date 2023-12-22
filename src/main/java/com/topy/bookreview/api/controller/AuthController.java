@@ -25,8 +25,8 @@ public class AuthController {
   }
 
   @GetMapping("/auth/mail/verify")
-  public ResponseEntity<?> mailVerify(@RequestParam String email, String authCode, long timeStamp) {
-    authService.mailVerify(email, authCode, timeStamp);
+  public ResponseEntity<?> mailVerify(@RequestParam String email, String authCode, long requestTimeMillis) {
+    authService.mailVerify(email, authCode, requestTimeMillis);
     return ResponseEntity.ok("인증이 완료됐습니다.");
   }
 }
