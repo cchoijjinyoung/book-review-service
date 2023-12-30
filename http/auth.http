@@ -21,14 +21,5 @@ Content-Type: application/json
 GET http://localhost:8080/auth/signout
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjZ3k3MTI3QGdtYWlsLmNvbSIsImV4cCI6MTcwMzI1NzkzOCwiaWF0IjoxNzAzMjU0MzM4fQ.DP0xp3TP2mmlH5z-Fu58oElYJMDrmSpj_sDqvexduSI
 
-### 디폴트 로그아웃
-GET http://localhost:8080/logout
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjZ3k3MTI3QGdtYWlsLmNvbSIsImV4cCI6MTcwMzE5NDYzNCwiaWF0IjoxNzAzMTkxMDM0fQ.gzwLRzj8eVu9m-V0EUbB3EAiUR5f80C0-nJp2Qn9Ns8
-
 ### 책 검색
-POST http://localhost:8080/client/test
-Content-Type: application/json
-
-{
-  "keyword": "asd"
-}
+GET http://localhost:8080/book/search?keyword=치킨&page=5&size=20&sort=latest
