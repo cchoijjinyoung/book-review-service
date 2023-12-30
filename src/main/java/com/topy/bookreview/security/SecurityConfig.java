@@ -70,11 +70,10 @@ public class SecurityConfig {
         .authorizeHttpRequests(authorize -> authorize
             .requestMatchers(
                 new AntPathRequestMatcher("/"),
-                new AntPathRequestMatcher("/auth/logout"),
+                new AntPathRequestMatcher("/book/search"),
                 new AntPathRequestMatcher("/auth/signup"),
                 new AntPathRequestMatcher("/auth/signin")
             ).permitAll()
-
             .anyRequest().authenticated())
         .addFilterBefore(emailPasswordAuthenticationFilter(),
             UsernamePasswordAuthenticationFilter.class)

@@ -1,4 +1,4 @@
-package com.topy.bookreview.domain.repository;
+package com.topy.bookreview.api.domain.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -8,9 +8,6 @@ import com.topy.bookreview.api.domain.entity.Review;
 import com.topy.bookreview.api.domain.entity.type.NotificationType;
 import com.topy.bookreview.api.domain.entity.type.RoleType;
 import com.topy.bookreview.api.domain.entity.type.TargetType;
-import com.topy.bookreview.api.domain.repository.MemberRepository;
-import com.topy.bookreview.api.domain.repository.NotificationRepository;
-import com.topy.bookreview.api.domain.repository.ReviewRepository;
 import com.topy.bookreview.global.config.JpaAuditingConfig;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;

@@ -1,4 +1,4 @@
-package com.topy.bookreview.service;
+package com.topy.bookreview.api.service;
 
 import static com.topy.bookreview.global.exception.ErrorCode.ALREADY_EMAIL_VERIFIED_USER;
 import static com.topy.bookreview.global.exception.ErrorCode.ALREADY_EXISTS_EMAIL;
@@ -16,7 +16,6 @@ import com.topy.bookreview.api.domain.entity.type.RoleType;
 import com.topy.bookreview.api.domain.repository.MemberRepository;
 import com.topy.bookreview.api.dto.SignUpRequestDto;
 import com.topy.bookreview.api.dto.SignUpResponseDto;
-import com.topy.bookreview.api.service.AuthService;
 import com.topy.bookreview.global.exception.CustomException;
 import com.topy.bookreview.global.manager.mail.AuthMailForm;
 import com.topy.bookreview.global.manager.mail.MailSenderManager;

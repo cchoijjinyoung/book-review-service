@@ -1,4 +1,4 @@
-package com.topy.bookreview.controller;
+package com.topy.bookreview.api.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.topy.bookreview.api.controller.AuthController;
 import com.topy.bookreview.api.dto.SignUpRequestDto;
 import com.topy.bookreview.api.dto.SignUpResponseDto;
 import com.topy.bookreview.api.service.AuthService;
