@@ -36,7 +36,7 @@ public class Review extends BaseTimeEntity {
   private int rating;
 
   @Column(nullable = false)
-  private String text;
+  private String content;
 
   @Column(nullable = false)
   private long likeCount;

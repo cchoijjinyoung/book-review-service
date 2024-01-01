@@ -1,0 +1,10 @@
+### 리뷰 작성
+POST http://localhost:8080/review
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjZ3k3MTI3QGdtYWlsLmNvbSIsImV4cCI6MTcwNDA5NTE1NiwiaWF0IjoxNzA0MDg0MzU2fQ.43_1FqCTJP_2sykct_PCOf4WfrtWnVbUTURjnj7qf1Y
+
+{
+  "content": "책 내용입니다.",
+  "isbn": "9788961590396",
+  "rating": 5
+}
