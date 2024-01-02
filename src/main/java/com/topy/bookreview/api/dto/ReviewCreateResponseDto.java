@@ -6,5 +6,5 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class ReviewCreateResponseDto {
-  private Long id;
+  private Long reviewId;
 }

@@ -23,8 +23,8 @@ public class ReviewCreateRequestDto {
   @NotNull
   private String content;
 
-  @Min(value = 0)
-  @Max(value = 5)
+  @Min(0)
+  @Max(5)
   private int rating;
 
 }

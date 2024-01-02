@@ -1,5 +1,6 @@
 package com.topy.bookreview.api.domain.entity;
 
+import com.topy.bookreview.api.dto.ReviewUpdateRequestDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -40,4 +41,9 @@ public class Review extends BaseTimeEntity {
 
   @Column(nullable = false)
   private long likeCount;
+
+  public void update(ReviewUpdateRequestDto reviewUpdateRequestDto) {
+    content = reviewUpdateRequestDto.getContent();
+    rating = reviewUpdateRequestDto.getRating();
+  }
 }
