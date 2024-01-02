@@ -19,8 +19,8 @@ public class AuthCodeRedisRepository {
     redisManager.save(KEY_PREFIX + email, authCode, EXPIRY_TIME_MILLIS);
   }
 
-  public Object getByEmail(String email) {
-    return redisManager.get(KEY_PREFIX + email);
+  public String getByEmail(String email) {
+    return (String) redisManager.get(KEY_PREFIX + email);
   }
 
   /**

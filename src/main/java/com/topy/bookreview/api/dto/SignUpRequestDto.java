@@ -28,7 +28,7 @@ public class SignUpRequestDto {
         .email(email)
         .password(encodedPassword)
         .nickname(nickname)
-        .role(RoleType.USER)
+        .role(RoleType.UNAUTHORIZED_USER)
         .build();
   }
 }

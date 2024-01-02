@@ -1,5 +1,5 @@
 package com.topy.bookreview.api.domain.entity.type;
 
 public enum RoleType {
-  USER, ADMIN
+  UNAUTHORIZED_USER, USER, ADMIN
 }

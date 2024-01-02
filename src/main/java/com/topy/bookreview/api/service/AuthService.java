@@ -3,6 +3,7 @@ package com.topy.bookreview.api.service;
 
 import static com.topy.bookreview.global.exception.ErrorCode.ALREADY_EMAIL_VERIFIED_USER;
 import static com.topy.bookreview.global.exception.ErrorCode.ALREADY_EXISTS_EMAIL;
+import static com.topy.bookreview.global.exception.ErrorCode.ALREADY_EXISTS_NICKNAME;
 import static com.topy.bookreview.global.exception.ErrorCode.EXPIRED_AUTH_CODE;
 import static com.topy.bookreview.global.exception.ErrorCode.UNMATCHED_AUTH_CODE;
 import static com.topy.bookreview.global.exception.ErrorCode.USER_NOT_FOUND;
@@ -42,11 +43,16 @@ public class AuthService {
       throw new CustomException(ALREADY_EXISTS_EMAIL);
     }
 
+    if (memberRepository.findByNickname(signUpRequestDto.getNickname()).isPresent()) {
+      throw new CustomException(ALREADY_EXISTS_NICKNAME);
+    }
+
     String encodedPassword = passwordEncoder.encode(signUpRequestDto.getPassword());
 
     Member savedMember = memberRepository.save(signUpRequestDto.toEntity(encodedPassword));
 
     String authCode = UUID.randomUUID().toString();
+
     mailSenderManager.sendMail(new AuthMailForm(savedMember.getEmail(), authCode));
     authCodeRedisRepository.saveByEmail(savedMember.getEmail(), authCode);
 
@@ -54,7 +60,7 @@ public class AuthService {
   }
 
   @Transactional
-  public void mailVerify(String email, String authCode, long requestTimeMillis) {
+  public void mailVerify(String email, String authCode) {
     Member findMember = memberRepository.findByEmail(email)
         .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
@@ -62,11 +68,12 @@ public class AuthService {
       throw new CustomException(ALREADY_EMAIL_VERIFIED_USER);
     }
 
-    String storedAuthCode = (String) authCodeRedisRepository.getByEmail(email);
+    String storedAuthCode = authCodeRedisRepository.getByEmail(email);
     Long expiredTimeMillis = authCodeRedisRepository.getExpireByEmail(email);
 
-    if (ObjectUtils.isEmpty(storedAuthCode) || expiredTimeMillis == null
-        || requestTimeMillis > expiredTimeMillis) {
+    log.info(String.valueOf(expiredTimeMillis));
+
+    if (ObjectUtils.isEmpty(storedAuthCode) || expiredTimeMillis == -1) {
       throw new CustomException(EXPIRED_AUTH_CODE);
     }
 
