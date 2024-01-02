@@ -44,7 +44,7 @@ public class Member extends BaseTimeEntity {
   private LocalDateTime emailVerifiedAt;
 
   public void verified() {
+    this.role = RoleType.USER;
     this.emailVerifiedAt = LocalDateTime.now();
-
   }
 }
