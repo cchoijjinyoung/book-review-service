@@ -1,8 +1,7 @@
-package com.topy.bookreview.domain.repository;
+package com.topy.bookreview.api.domain.repository;
 
 import com.topy.bookreview.api.domain.entity.Member;
 import com.topy.bookreview.api.domain.entity.type.RoleType;
-import com.topy.bookreview.api.domain.repository.MemberRepository;
 import com.topy.bookreview.global.config.JpaAuditingConfig;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;

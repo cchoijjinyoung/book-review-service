@@ -1,12 +1,9 @@
-package com.topy.bookreview.domain.repository;
+package com.topy.bookreview.api.domain.repository;
 
 import com.topy.bookreview.api.domain.entity.Likes;
 import com.topy.bookreview.api.domain.entity.Member;
 import com.topy.bookreview.api.domain.entity.Review;
 import com.topy.bookreview.api.domain.entity.type.RoleType;
-import com.topy.bookreview.api.domain.repository.LikesRepository;
-import com.topy.bookreview.api.domain.repository.MemberRepository;
-import com.topy.bookreview.api.domain.repository.ReviewRepository;
 import com.topy.bookreview.global.config.JpaAuditingConfig;
 import java.time.LocalDateTime;
 import org.assertj.core.api.Assertions;

@@ -70,6 +70,7 @@ public class SecurityConfig {
         .authorizeHttpRequests(authorize -> authorize
             .requestMatchers(
                 new AntPathRequestMatcher("/"),
+                new AntPathRequestMatcher("/book/search"),
                 new AntPathRequestMatcher("/auth/mail/verify"),
                 new AntPathRequestMatcher("/auth/signup"),
                 new AntPathRequestMatcher("/auth/signin")
