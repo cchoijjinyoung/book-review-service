@@ -10,6 +10,7 @@ public class SignUpResponseDto {
 
   private String nickname;
 
+
   public static SignUpResponseDto fromEntity(Member member) {
     return SignUpResponseDto.builder()
         .nickname(member.getNickname())

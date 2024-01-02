@@ -24,7 +24,9 @@ public enum ErrorCode {
 
   REFRESH_TOKEN_NOT_EXIST(SC_UNAUTHORIZED, "리프래시 토큰이 존재하지 않습니다."),
   INVALID_TOKEN(SC_BAD_REQUEST, "잘못된 토큰입니다."),
-  COOKIE_NOT_FOUND(SC_NOT_FOUND, "존재하지 않는 쿠키입니다.")
+  COOKIE_NOT_FOUND(SC_NOT_FOUND, "존재하지 않는 쿠키입니다."),
+
+  SEARCH_RESULT_EMPTY(SC_NOT_FOUND, "조회된 결과가 없습니다."),
   ;
 
   private final int code;
