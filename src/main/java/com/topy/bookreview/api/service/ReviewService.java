@@ -6,6 +6,7 @@ import com.topy.bookreview.api.domain.repository.MemberRepository;
 import com.topy.bookreview.api.domain.repository.ReviewRepository;
 import com.topy.bookreview.api.dto.ReviewCreateRequestDto;
 import com.topy.bookreview.api.dto.ReviewCreateResponseDto;
+import com.topy.bookreview.api.dto.ReviewListRequestDto;
 import com.topy.bookreview.api.dto.ReviewReadResponseDto;
 import com.topy.bookreview.api.dto.ReviewUpdateRequestDto;
 import com.topy.bookreview.api.dto.ReviewUpdateResponseDto;
@@ -13,8 +14,11 @@ import com.topy.bookreview.global.exception.CustomException;
 import com.topy.bookreview.global.exception.ErrorCode;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,8 +55,13 @@ public class ReviewService {
   }
 
   @Transactional(readOnly = true)
-  public Slice<ReviewReadResponseDto> findReviewsByIsbn(String isbn, Pageable pageable) {
-    Slice<Review> reviews = reviewRepository.findByIsbn(isbn, pageable);
+  public Slice<ReviewReadResponseDto> findReviewsByIsbn(ReviewListRequestDto reviewListRequestDto) {
+    Pageable pageable = PageRequest.of(
+        reviewListRequestDto.getPage(),
+        reviewListRequestDto.getSize(),
+        Sort.by(Direction.DESC, reviewListRequestDto.getSort()));
+
+    Slice<Review> reviews = reviewRepository.findByIsbn(reviewListRequestDto.getIsbn(), pageable);
     return reviews.map(ReviewReadResponseDto::fromEntity);
   }
 

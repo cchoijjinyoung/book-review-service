@@ -41,7 +41,7 @@ class ReviewRepositoryTest {
 
     Review review = Review.builder()
         .author(author)
-        .text("리뷰 내용 입니다.")
+        .content("리뷰 내용 입니다.")
         .isbn("978-1-234-56789-0")
         .rating(5)
         .build();
@@ -51,7 +51,7 @@ class ReviewRepositoryTest {
 
     // then
     Assertions.assertThat(savedReview.getAuthor().getNickname()).isEqualTo("작성자닉네임");
-    Assertions.assertThat(savedReview.getText()).isEqualTo("리뷰 내용 입니다.");
+    Assertions.assertThat(savedReview.getContent()).isEqualTo("리뷰 내용 입니다.");
     Assertions.assertThat(savedReview.getIsbn()).isEqualTo("978-1-234-56789-0");
     Assertions.assertThat(savedReview.getRating()).isEqualTo(5);
   }
