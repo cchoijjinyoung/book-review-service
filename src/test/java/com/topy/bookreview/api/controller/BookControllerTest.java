@@ -45,17 +45,17 @@ class BookControllerTest {
         .build();
 
     String keyword = "test";
-    Integer page = 1;
-    Integer size = 10;
+    int page = 1;
+    int size = 10;
     String sort = "accuracy";
 
     Mockito.when(bookService.search(any(BookSearchRequestDto.class)))
         .thenReturn(List.of(bookSearchResponseDto));
 
-    mockMvc.perform(MockMvcRequestBuilders.get("/book/search")
+    mockMvc.perform(MockMvcRequestBuilders.get("/books/search")
             .param("keyword", keyword)
-            .param("page", page.toString())
-            .param("size", size.toString())
+            .param("page", Integer.toString(page))
+            .param("size", Integer.toString(size))
             .param("sort", sort)
             .contentType(APPLICATION_JSON))
         .andExpect(status().isOk());

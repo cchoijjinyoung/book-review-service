@@ -1,9 +1,9 @@
 package com.topy.bookreview.api.dto;
 
-import static com.topy.bookreview.api.constant.SortType.ACCURACY;
-import static com.topy.bookreview.api.constant.SortType.LATEST;
+import static com.topy.bookreview.api.constant.BookSearchSortType.ACCURACY;
+import static com.topy.bookreview.api.constant.BookSearchSortType.LATEST;
 
-import com.topy.bookreview.api.constant.SortType;
+import com.topy.bookreview.api.constant.BookSearchSortType;
 import lombok.Getter;
 
 @Getter
@@ -15,16 +15,16 @@ public class BookSearchRequestDto {
 
   private final Integer size;
 
-  private final SortType sortType;
+  private final BookSearchSortType bookSearchSortType;
 
   public BookSearchRequestDto(String keyword, Integer page, Integer size, String sort) {
     this.keyword = keyword;
     this.size = size < 10 || size > 50 ? 10 : size;
     this.page = page;
-    this.sortType = resolveSort(sort);
+    this.bookSearchSortType = resolveSort(sort);
   }
 
-  private SortType resolveSort(String sort) {
+  private BookSearchSortType resolveSort(String sort) {
     if (LATEST.getDefaultValue().equals(sort)) {
       return LATEST;
     } else {

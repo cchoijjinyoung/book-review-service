@@ -1,7 +1,7 @@
 package com.topy.bookreview.client.kakao;
 
-import static com.topy.bookreview.api.constant.SortType.ACCURACY;
-import static com.topy.bookreview.api.constant.SortType.LATEST;
+import static com.topy.bookreview.api.constant.BookSearchSortType.ACCURACY;
+import static com.topy.bookreview.api.constant.BookSearchSortType.LATEST;
 
 import com.topy.bookreview.api.dto.BookSearchRequestDto;
 import lombok.Builder;
@@ -25,7 +25,7 @@ public class KakaoBookSearchRequest {
         .query(bookSearchRequestDto.getKeyword())
         .page(bookSearchRequestDto.getPage())
         .size(bookSearchRequestDto.getSize())
-        .sort(bookSearchRequestDto.getSortType() == LATEST ? LATEST.getKakaoValue() : ACCURACY.getKakaoValue())
+        .sort(bookSearchRequestDto.getBookSearchSortType() == LATEST ? LATEST.getKakaoValue() : ACCURACY.getKakaoValue())
         .build();
   }
 }

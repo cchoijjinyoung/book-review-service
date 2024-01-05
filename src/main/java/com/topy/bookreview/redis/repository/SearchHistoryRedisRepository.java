@@ -22,38 +22,28 @@ public class SearchHistoryRedisRepository {
   private final static long EXPIRY_TIME_MILLIS = 1000 * 60 * 60;
 
   public void save(BookSearchRequestDto request, Object result) {
-    redisManager.save(
-        KEYWORD_PREFIX + request.getKeyword()
-        + PAGE_PREFIX + request.getPage()
-        + SIZE_PREFIX + request.getSize()
-        + SORT_PREFIX + request.getSortType(), result, EXPIRY_TIME_MILLIS);
-
+    redisManager.save(generateKey(request), result, EXPIRY_TIME_MILLIS);
   }
 
   public List<BookSearchResponseDto> get(BookSearchRequestDto request) {
-    return (List<BookSearchResponseDto>) redisManager.get(
-        KEYWORD_PREFIX + request.getKeyword()
-        + PAGE_PREFIX + request.getPage()
-        + SIZE_PREFIX + request.getSize()
-        + SORT_PREFIX + request.getSortType());
+    return (List<BookSearchResponseDto>) redisManager.get(generateKey(request));
   }
 
   /**
    * @return long - TimeUnit.MILLISECONDS
    */
   public Long getExpire(BookSearchRequestDto request) {
-    return redisManager.getExpire(
-        KEYWORD_PREFIX + request.getKeyword()
-        + PAGE_PREFIX + request.getPage()
-        + SIZE_PREFIX + request.getSize()
-        + SORT_PREFIX + request.getSortType(), TimeUnit.MILLISECONDS);
+    return redisManager.getExpire(generateKey(request), TimeUnit.MILLISECONDS);
   }
 
   public boolean delete(BookSearchRequestDto request) {
-    return redisManager.delete(
-        KEYWORD_PREFIX + request.getKeyword()
+    return redisManager.delete(generateKey(request));
+  }
+
+  private static String generateKey(BookSearchRequestDto request) {
+    return KEYWORD_PREFIX + request.getKeyword()
         + PAGE_PREFIX + request.getPage()
         + SIZE_PREFIX + request.getSize()
-        + SORT_PREFIX + request.getSortType());
+        + SORT_PREFIX + request.getBookSearchSortType();
   }
 }

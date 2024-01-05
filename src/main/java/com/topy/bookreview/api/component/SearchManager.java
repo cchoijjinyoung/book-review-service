@@ -10,6 +10,7 @@ import com.topy.bookreview.client.naver.NaverBookSearchRequest;
 import com.topy.bookreview.client.naver.NaverBookSearchResponse;
 import com.topy.bookreview.client.naver.NaverBookSearchResponse.Item;
 import com.topy.bookreview.client.naver.NaverSearchClient;
+import com.topy.bookreview.redis.repository.SearchDetailHistoryRedisRepository;
 import com.topy.bookreview.redis.repository.SearchHistoryRedisRepository;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import java.util.List;
@@ -25,6 +26,7 @@ public class SearchManager {
   private final NaverSearchClient naverSearchClient;
   private final KakaoSearchClient kakaoSearchClient;
   private final SearchHistoryRedisRepository searchHistoryRedisRepository;
+  private final SearchDetailHistoryRedisRepository searchDetailHistoryRedisRepository;
 
   @CircuitBreaker(name = "BOOK_SEARCH", fallbackMethod = "searchCache")
   public List<BookSearchResponseDto> searchActual(BookSearchRequestDto bookSearchRequestDto) {
@@ -53,5 +55,27 @@ public class SearchManager {
     KakaoBookSearchResponse kakaoBookSearchResponse = kakaoSearchClient.search(
         kakaoBookSearchRequest);
     return kakaoBookSearchResponse.getDocuments().stream().map(Document::toDto).toList();
+  }
+
+  @CircuitBreaker(name = "BOOK_SEARCH_DETAIL", fallbackMethod = "searchDetailCache")
+  public BookSearchResponseDto searchDetailActual(String isbn) {
+    NaverBookSearchResponse naverBookSearchResponse = naverSearchClient.searchDetail(isbn);
+    return naverBookSearchResponse.getItems().get(0).toDto();
+  }
+
+  public BookSearchResponseDto searchDetailCache(String isbn, Throwable throwable) {
+    log.info("서킷브레이커 OPEN - 캐시저장소 호출", throwable);
+    BookSearchResponseDto result = searchDetailHistoryRedisRepository.get(isbn);
+    if (result == null) {
+      log.info("검색 조건에 맞는 캐시가 존재히지 않습니다.");
+      return searchDetailFinal(isbn);
+    }
+    return result;
+  }
+
+  public BookSearchResponseDto searchDetailFinal(String isbn) {
+    log.info("카카오 검색 API 호출");
+    KakaoBookSearchResponse kakaoBookSearchResponse = kakaoSearchClient.searchDetail(isbn);
+    return kakaoBookSearchResponse.getDocuments().get(0).toDto();
   }
 }

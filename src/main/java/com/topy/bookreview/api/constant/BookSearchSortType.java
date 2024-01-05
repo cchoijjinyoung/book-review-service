@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum SortType {
+public enum BookSearchSortType {
   ACCURACY("accuracy", "sim", "accuracy"),
   LATEST("latest", "date", "latest"),
   ;
