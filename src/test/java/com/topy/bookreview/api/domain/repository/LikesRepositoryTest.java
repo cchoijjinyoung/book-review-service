@@ -52,7 +52,7 @@ class LikesRepositoryTest {
 
     Review review = reviewRepository.save(Review.builder()
         .author(author)
-        .text("리뷰 내용 입니다.")
+        .content("리뷰 내용 입니다.")
         .isbn("978-1-234-56789-0")
         .rating(5)
         .build());
@@ -66,7 +66,7 @@ class LikesRepositoryTest {
     Likes savedLikes = likesRepository.save(likes);
 
     // then
-    Assertions.assertThat(savedLikes.getReview().getText()).isEqualTo("리뷰 내용 입니다.");
+    Assertions.assertThat(savedLikes.getReview().getContent()).isEqualTo("리뷰 내용 입니다.");
     Assertions.assertThat(savedLikes.getReview().getIsbn()).isEqualTo("978-1-234-56789-0");
     Assertions.assertThat(savedLikes.getMember().getNickname()).isEqualTo("좋아요닉네임");
 
