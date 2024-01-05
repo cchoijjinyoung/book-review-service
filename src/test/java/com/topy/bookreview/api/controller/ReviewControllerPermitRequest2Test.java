@@ -41,7 +41,7 @@ import org.springframework.test.web.servlet.MockMvc;
             })
     }
 )
-class ReviewControllerPermitRequest2Test {
+class ReviewControllerPermitRequestTest {
 
   @MockBean
   private ReviewService reviewService;
