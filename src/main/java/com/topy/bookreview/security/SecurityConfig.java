@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -70,12 +71,13 @@ public class SecurityConfig {
         .authorizeHttpRequests(authorize -> authorize
             .requestMatchers(
                 new AntPathRequestMatcher("/"),
-                new AntPathRequestMatcher("/book/search"),
+                new AntPathRequestMatcher("/books/**"),
+                new AntPathRequestMatcher("/reviews", "GET"),
+                new AntPathRequestMatcher("/reviews/{id}", "GET"),
                 new AntPathRequestMatcher("/auth/mail/verify"),
                 new AntPathRequestMatcher("/auth/signup"),
                 new AntPathRequestMatcher("/auth/signin")
             ).permitAll()
-
             .anyRequest().authenticated())
         .addFilterBefore(emailPasswordAuthenticationFilter(),
             UsernamePasswordAuthenticationFilter.class)

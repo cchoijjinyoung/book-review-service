@@ -107,7 +107,7 @@ class AuthServiceTest {
     when(memberRepository.findByEmail(any())).thenReturn(Optional.empty());
     // when
     // then
-    assertThatThrownBy(() -> authService.mailVerify(email, authCode, timeStamp))
+    assertThatThrownBy(() -> authService.mailVerify(email, authCode))
         .isInstanceOf(CustomException.class)
         .hasMessage(USER_NOT_FOUND.getMessage());
   }
@@ -124,7 +124,7 @@ class AuthServiceTest {
     when(memberRepository.findByEmail(any())).thenReturn(Optional.of(member));
     // when
     // then
-    assertThatThrownBy(() -> authService.mailVerify(email, authCode, timeStamp))
+    assertThatThrownBy(() -> authService.mailVerify(email, authCode))
         .isInstanceOf(CustomException.class)
         .hasMessage(ALREADY_EMAIL_VERIFIED_USER.getMessage());
   }
@@ -148,7 +148,7 @@ class AuthServiceTest {
     when(authCodeRedisRepository.getExpireByEmail(email)).thenReturn(storedTimeLong);
     // when
     // then
-    assertThatThrownBy(() -> authService.mailVerify(email, authCode, requestTimeLong))
+    assertThatThrownBy(() -> authService.mailVerify(email, authCode))
         .isInstanceOf(CustomException.class)
         .hasMessage(UNMATCHED_AUTH_CODE.getMessage());
   }
@@ -170,7 +170,7 @@ class AuthServiceTest {
     when(authCodeRedisRepository.getByEmail(email)).thenReturn(storedAuthCode);
     when(authCodeRedisRepository.getExpireByEmail(email)).thenReturn(storedTimeLong);
     // then
-    authService.mailVerify(email, authCode, requestTimeLong);
+    authService.mailVerify(email, authCode);
     assertThat(member.getEmailVerifiedAt()).isNotNull();
   }
 

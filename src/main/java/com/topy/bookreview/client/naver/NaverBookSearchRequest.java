@@ -1,7 +1,7 @@
 package com.topy.bookreview.client.naver;
 
-import static com.topy.bookreview.api.constant.SortType.ACCURACY;
-import static com.topy.bookreview.api.constant.SortType.LATEST;
+import static com.topy.bookreview.api.constant.BookSearchSortType.ACCURACY;
+import static com.topy.bookreview.api.constant.BookSearchSortType.LATEST;
 
 import com.topy.bookreview.api.dto.BookSearchRequestDto;
 import lombok.Builder;
@@ -30,7 +30,7 @@ public class NaverBookSearchRequest {
         .query(bookSearchRequestDto.getKeyword())
         .display(bookSearchRequestDto.getSize())
         .start(start)
-        .sort(bookSearchRequestDto.getSortType() == LATEST ? LATEST.getNaverValue() : ACCURACY.getNaverValue())
+        .sort(bookSearchRequestDto.getBookSearchSortType() == LATEST ? LATEST.getNaverValue() : ACCURACY.getNaverValue())
         .build();
   }
 }

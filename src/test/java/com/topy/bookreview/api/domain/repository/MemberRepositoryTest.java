@@ -26,7 +26,7 @@ class MemberRepositoryTest {
     Member member = Member.builder()
         .email("foo@gmail.com")
         .password("bar")
-        .nickname("nick")
+        .nickname("test")
         .role(RoleType.USER)
         .build();
     // when
@@ -35,7 +35,7 @@ class MemberRepositoryTest {
     // then
     Assertions.assertThat(findMember.getEmail()).isEqualTo("foo@gmail.com");
     Assertions.assertThat(findMember.getPassword()).isEqualTo("bar");
-    Assertions.assertThat(findMember.getNickname()).isEqualTo("nick");
+    Assertions.assertThat(findMember.getNickname()).isEqualTo("test");
     Assertions.assertThat(findMember.getRole()).isEqualTo(RoleType.USER);
     Assertions.assertThat(findMember.getEmailVerifiedAt()).isNull();
   }

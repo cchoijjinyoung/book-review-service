@@ -87,7 +87,7 @@ class BookServiceTest {
     doNothing().when(searchHistoryRedisRepository).save(request, responseDtoList);
 
     // then
-    bookService.handleSaveCacheEvent(event);
+    bookService.handleSaveSearchCacheEvent(event);
     verify(searchHistoryRedisRepository, times(1)).get(any(BookSearchRequestDto.class));
     verify(searchHistoryRedisRepository, times(1)).save(any(BookSearchRequestDto.class), any(List.class));
   }
@@ -105,7 +105,7 @@ class BookServiceTest {
     when(searchHistoryRedisRepository.get(request)).thenReturn(responseDtoList);
 
     // then
-    bookService.handleSaveCacheEvent(event);
+    bookService.handleSaveSearchCacheEvent(event);
     verify(searchHistoryRedisRepository, times(1)).get(any(BookSearchRequestDto.class));
     verify(searchHistoryRedisRepository, never()).save(any(BookSearchRequestDto.class), any(List.class));
   }

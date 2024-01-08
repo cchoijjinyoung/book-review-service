@@ -55,7 +55,7 @@ class NotificationRepositoryTest {
 
     Review review = reviewRepository.save(Review.builder()
         .author(receiver)
-        .text("리뷰 내용 입니다.")
+        .content("리뷰 내용 입니다.")
         .isbn("978-1-234-56789-0")
         .rating(5)
         .build());

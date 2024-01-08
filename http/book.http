@@ -1,0 +1,5 @@
+### 책 검색
+GET http://localhost:8080/books/search?keyword=치킨&page=5&size=20&sort=latest
+
+### 책 상세 검색
+GET http://localhost:8080/books/9788996017059

@@ -15,7 +15,7 @@ public class CustomCircuitBreakerConfig {
   private final CircuitBreakerRegistry circuitBreakerRegistry;
 
   @Bean
-  public CircuitBreaker circuitBreaker() {
+  public CircuitBreaker bookSearchCircuitBreaker() {
     CircuitBreakerConfig circuitBreakerConfig = CircuitBreakerConfig.custom()
         .failureRateThreshold(50)
         .waitDurationInOpenState(Duration.ofMillis(5000))
@@ -24,5 +24,17 @@ public class CustomCircuitBreakerConfig {
         .build();
 
     return circuitBreakerRegistry.circuitBreaker("BOOK_SEARCH", circuitBreakerConfig);
+  }
+
+  @Bean
+  public CircuitBreaker bookSearchDetailCircuitBreaker() {
+    CircuitBreakerConfig circuitBreakerConfig = CircuitBreakerConfig.custom()
+        .failureRateThreshold(50)
+        .waitDurationInOpenState(Duration.ofMillis(5000))
+        .permittedNumberOfCallsInHalfOpenState(2)
+        .slidingWindowSize(6)
+        .build();
+
+    return circuitBreakerRegistry.circuitBreaker("BOOK_SEARCH_DETAIL", circuitBreakerConfig);
   }
 }
