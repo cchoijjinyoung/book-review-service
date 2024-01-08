@@ -1,13 +1,8 @@
 package com.topy.bookreview.api.controller;
 
-import static org.springframework.data.domain.Sort.Direction.DESC;
-
 import com.topy.bookreview.api.dto.BookSearchRequestDto;
 import com.topy.bookreview.api.service.BookService;
-import com.topy.bookreview.api.service.ReviewService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

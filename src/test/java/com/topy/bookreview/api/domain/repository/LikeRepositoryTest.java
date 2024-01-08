@@ -1,6 +1,6 @@
 package com.topy.bookreview.api.domain.repository;
 
-import com.topy.bookreview.api.domain.entity.Likes;
+import com.topy.bookreview.api.domain.entity.Like;
 import com.topy.bookreview.api.domain.entity.Member;
 import com.topy.bookreview.api.domain.entity.Review;
 import com.topy.bookreview.api.domain.entity.type.RoleType;
@@ -17,10 +17,10 @@ import org.springframework.context.annotation.Import;
 @DataJpaTest
 @Import(JpaAuditingConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class LikesRepositoryTest {
+class LikeRepositoryTest {
 
   @Autowired
-  private LikesRepository likesRepository;
+  private LikeRepository likeRepository;
 
   @Autowired
   private MemberRepository memberRepository;
@@ -57,18 +57,18 @@ class LikesRepositoryTest {
         .rating(5)
         .build());
 
-    Likes likes = Likes.builder()
+    Like like = Like.builder()
         .review(review)
         .member(liker)
         .build();
 
     // when
-    Likes savedLikes = likesRepository.save(likes);
+    Like savedLike = likeRepository.save(like);
 
     // then
-    Assertions.assertThat(savedLikes.getReview().getContent()).isEqualTo("리뷰 내용 입니다.");
-    Assertions.assertThat(savedLikes.getReview().getIsbn()).isEqualTo("978-1-234-56789-0");
-    Assertions.assertThat(savedLikes.getMember().getNickname()).isEqualTo("좋아요닉네임");
+    Assertions.assertThat(savedLike.getReview().getContent()).isEqualTo("리뷰 내용 입니다.");
+    Assertions.assertThat(savedLike.getReview().getIsbn()).isEqualTo("978-1-234-56789-0");
+    Assertions.assertThat(savedLike.getMember().getNickname()).isEqualTo("좋아요닉네임");
 
   }
 

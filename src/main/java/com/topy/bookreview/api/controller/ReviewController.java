@@ -6,7 +6,6 @@ import com.topy.bookreview.api.dto.ReviewCreateRequestDto;
 import com.topy.bookreview.api.dto.ReviewListRequestDto;
 import com.topy.bookreview.api.dto.ReviewUpdateRequestDto;
 import com.topy.bookreview.api.service.ReviewService;
-import com.topy.bookreview.security.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
