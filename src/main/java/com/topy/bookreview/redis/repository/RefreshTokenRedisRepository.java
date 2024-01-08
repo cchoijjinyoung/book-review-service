@@ -19,7 +19,7 @@ public class RefreshTokenRedisRepository {
     redisManager.save(KEY_PREFIX + refreshToken, refreshToken, EXPIRY_TIME_MILLIS);
   }
 
-  public Object get(String refreshToken) {
+  public String get(String refreshToken) {
     return redisManager.get(KEY_PREFIX + refreshToken, String.class);
   }
 
