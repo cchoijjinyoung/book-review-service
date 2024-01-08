@@ -20,7 +20,7 @@ public class RefreshTokenRedisRepository {
   }
 
   public Object get(String refreshToken) {
-    return redisManager.get(KEY_PREFIX + refreshToken);
+    return redisManager.get(KEY_PREFIX + refreshToken, String.class);
   }
 
   /**

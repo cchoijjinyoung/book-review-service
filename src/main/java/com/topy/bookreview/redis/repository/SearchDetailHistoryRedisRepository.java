@@ -21,7 +21,7 @@ public class SearchDetailHistoryRedisRepository {
   }
 
   public BookSearchResponseDto get(String isbn) {
-    return (BookSearchResponseDto) redisManager.get(KEY_PREFIX + isbn);
+    return redisManager.get(KEY_PREFIX + isbn, BookSearchResponseDto.class);
   }
 
   /**

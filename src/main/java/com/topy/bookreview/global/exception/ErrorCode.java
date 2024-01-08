@@ -4,6 +4,7 @@ package com.topy.bookreview.global.exception;
 import static jakarta.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static jakarta.servlet.http.HttpServletResponse.SC_CONFLICT;
 import static jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN;
+import static jakarta.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 import static jakarta.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 
@@ -33,6 +34,7 @@ public enum ErrorCode {
   FORBIDDEN_ACCESS(SC_FORBIDDEN, "잘못된 접근입니다."),
 
   SEARCH_RESULT_EMPTY(SC_NOT_FOUND, "조회된 결과가 없습니다."),
+  CACHE_DATA_CONVERT_ERROR(SC_INTERNAL_SERVER_ERROR, "캐시 데이터의 타입이 올바르지 않습니다."),
   ;
 
   private final int code;

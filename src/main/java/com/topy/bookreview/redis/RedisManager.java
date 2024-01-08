@@ -1,5 +1,8 @@
 package com.topy.bookreview.redis;
 
+import static com.topy.bookreview.global.exception.ErrorCode.CACHE_DATA_CONVERT_ERROR;
+
+import com.topy.bookreview.global.exception.CustomException;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -20,8 +23,13 @@ public class RedisManager {
     redisTemplate.expire(key, expiryMillis, TimeUnit.MILLISECONDS);
   }
 
-  public Object get(String key) {
-    return redisTemplate.opsForValue().get(key);
+  public <T> T get(String key, Class<T> type) {
+    Object value = redisTemplate.opsForValue().get(key);
+    if (type.isInstance(value)) {
+      return type.cast(value);
+    } else {
+      throw new CustomException(CACHE_DATA_CONVERT_ERROR);
+    }
   }
 
   public Long getExpire(String key, TimeUnit timeUnit) {

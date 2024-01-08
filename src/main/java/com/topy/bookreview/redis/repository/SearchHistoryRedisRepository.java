@@ -26,7 +26,7 @@ public class SearchHistoryRedisRepository {
   }
 
   public List<BookSearchResponseDto> get(BookSearchRequestDto request) {
-    return (List<BookSearchResponseDto>) redisManager.get(generateKey(request));
+    return redisManager.get(generateKey(request), List.class);
   }
 
   /**

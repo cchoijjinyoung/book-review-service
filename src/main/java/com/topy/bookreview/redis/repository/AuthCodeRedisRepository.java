@@ -20,7 +20,7 @@ public class AuthCodeRedisRepository {
   }
 
   public String getByEmail(String email) {
-    return (String) redisManager.get(KEY_PREFIX + email);
+    return redisManager.get(KEY_PREFIX + email, String.class);
   }
 
   /**
