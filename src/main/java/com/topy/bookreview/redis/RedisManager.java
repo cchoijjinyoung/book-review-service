@@ -25,6 +25,9 @@ public class RedisManager {
 
   public <T> T get(String key, Class<T> type) {
     Object value = redisTemplate.opsForValue().get(key);
+    if (value == null) {
+      return null;
+    }
     if (type.isInstance(value)) {
       return type.cast(value);
     } else {
@@ -38,5 +41,9 @@ public class RedisManager {
 
   public boolean delete(String key) {
     return Boolean.TRUE.equals(redisTemplate.delete(key));
+  }
+
+  public void publish(String channelName, Object message) {
+    redisTemplate.convertAndSend(channelName, message);
   }
 }
