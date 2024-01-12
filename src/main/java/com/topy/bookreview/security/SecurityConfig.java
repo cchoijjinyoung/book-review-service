@@ -3,6 +3,7 @@ package com.topy.bookreview.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.topy.bookreview.api.domain.repository.MemberRepository;
 import com.topy.bookreview.global.manager.JwtManager;
+import com.topy.bookreview.redis.listener.NotificationSubscriber;
 import com.topy.bookreview.redis.repository.RefreshTokenRedisRepository;
 import com.topy.bookreview.security.filter.EmailPasswordAuthenticationFilter;
 import com.topy.bookreview.security.filter.JwtAuthenticationFilter;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -30,6 +32,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
@@ -43,6 +46,8 @@ public class SecurityConfig {
   private final ObjectMapper objectMapper;
   private final MemberRepository memberRepository;
   private final RefreshTokenRedisRepository refreshTokenRedisRepository;
+  private final RedisMessageListenerContainer messageListenerContainer;
+  private final NotificationSubscriber notificationSubscriber;
 
   @Bean
   public WebSecurityCustomizer webSecurityCustomizer() {
@@ -60,7 +65,9 @@ public class SecurityConfig {
         .csrf(AbstractHttpConfigurer::disable)
         .logout(c -> c
             .logoutUrl("/auth/signout")
-            .addLogoutHandler(new CustomLogoutHandler(refreshTokenRedisRepository))
+            .addLogoutHandler(
+                new CustomLogoutHandler(refreshTokenRedisRepository, messageListenerContainer,
+                    notificationSubscriber))
             .logoutSuccessHandler(new CustomLogoutSuccessHandler()))
         .exceptionHandling(e -> {
               e.accessDeniedHandler(new ForbiddenHandler(objectMapper));
@@ -81,7 +88,7 @@ public class SecurityConfig {
         .addFilterBefore(emailPasswordAuthenticationFilter(),
             UsernamePasswordAuthenticationFilter.class)
         .addFilterBefore(jwtAuthenticationFilter(),
-            UsernamePasswordAuthenticationFilter.class)
+            LogoutFilter.class)
         .build();
   }
 
@@ -92,7 +99,8 @@ public class SecurityConfig {
         authenticationManager(), objectMapper);
 
     filter.setAuthenticationSuccessHandler(
-        new LoginSuccessHandler(jwtManager, refreshTokenRedisRepository));
+        new LoginSuccessHandler(jwtManager, refreshTokenRedisRepository, messageListenerContainer,
+            notificationSubscriber));
     filter.setAuthenticationFailureHandler(new LoginFailureHandler(objectMapper));
     return filter;
   }

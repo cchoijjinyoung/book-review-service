@@ -46,4 +46,12 @@ public class Review extends BaseTimeEntity {
     content = reviewUpdateRequestDto.getContent();
     rating = reviewUpdateRequestDto.getRating();
   }
+
+  public long increaseLikeCount() {
+    return ++likeCount;
+  }
+
+  public long decreaseLikeCount() {
+    return --likeCount;
+  }
 }
