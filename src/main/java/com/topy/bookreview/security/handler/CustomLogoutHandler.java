@@ -36,7 +36,7 @@ public class CustomLogoutHandler implements LogoutHandler {
 
     CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
 
-    log.info("redis pub/sub 유저 알림 채널 제거");
+    log.info("redis pub/sub 유저 알림 채널 구독 취소");
     messageListenerContainer.removeMessageListener(notificationSubscriber,
         new ChannelTopic(Topic.CHANNEL_NOTIFICATION.getPrefix() + principal.getId()));
 
