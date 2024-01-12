@@ -86,14 +86,14 @@ class ReviewControllerPermitRequestTest {
 - 'A 회원'이 'B 회원'의 리뷰에 좋아요를 누른다.
   - 유효성 검사 후 likeCount를 증가시키고 증가된 likeCount를 응답한다.
   - `ApplicationEventPublisher` '실시간 알림 이벤트'를 발생시킨다.(알림생성: "A님이 회원님의 리뷰를 좋아합니다.")
-  - 알림의 `receiverId` 를 추출하여 SseEmitter를 찾는다.(실시간 알림을 받기 위해 userId로 SseEmitter에 연결된 회원이 '좋아요 알림'을 받아야하므로)
+  - 알림의 `receiverId` 를 추출하여 SseEmitter를 찾는다.(SseEmitter에 연결된 회원이 '좋아요 알림'을 받아야하므로)
   - 찾은 SseEmitter 객체에 알림데이터를 담아서 `sseEmitter.send()`한다.
 - 다만, 위의 경우 다중서버에서는 작동하지 않는다.
   - SseEmitter는 HTTP 요청을 처리하는 동안 생성되고, 이벤트가 전송되는 동안 유지되며, 타임아웃이되면 소멸하는 객체이기 때문에 인메모리 저장소와 비슷한 방식으로 동작하기 때문이다.
   - 즉, SseEmitter는 WAS 인스턴스 메모리내에만 존재한다.
   - 회원 A의 SseEmitter가 WAS-1에만 존재하면, 리뷰 좋아요 요청을 받은 WAS-2에서는 해당 알림을 받아야할 회원의 SseEmitter를 찾을 수 없게된다.
 - 그래서 Redis pub/sub을 같이 사용한다.
-  - B유저(id:1)가 로그인에 성공하면 Redis에 채널이름을 `notification:{id}` => "notification:1" 과 같이 생성하고, WAS 자체가 생성된 Redis 채널을 구독한다.
+  - B유저(id:1)가 로그인에 성공하면 Redis에 채널이름을 `notification:{id}` => "notification:1" 과 같이 생성하고, WAS는 생성된 Redis 채널을 구독한다.
   - 리뷰 좋아요 발생 시, 작성자의 id값을 통해 채널에 알림을 보낸다(publish).
   - 해당 채널을 구독한 WAS는 publish된 알림데이터를 받을 수 있다. 그 후에는 알림데이터에서 `receiverId`를 추출하여 SseEmitter를 찾고 데이터를 담아서 `send()`한다.
 
