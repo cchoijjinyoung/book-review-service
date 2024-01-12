@@ -19,6 +19,6 @@ Content-Type: application/json
 
 ### 로그아웃
 GET http://localhost:8080/auth/signout
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjZ3k3MTI3QGdtYWlsLmNvbSIsImV4cCI6MTcwMzI1NzkzOCwiaWF0IjoxNzAzMjU0MzM4fQ.DP0xp3TP2mmlH5z-Fu58oElYJMDrmSpj_sDqvexduSI
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjZ3k3MTI3QGdtYWlsLmNvbSIsImV4cCI6MTcwNTEwMjA2MCwiaWF0IjoxNzA1MDkxMjYwfQ.HcWh1tiSPfNHTZsc1MU0BL623bCZaJ5z5f8quhCqvp0
 
 
