@@ -78,6 +78,6 @@ class NotificationRepositoryTest {
     assertThat(savedNotification.getContent()).isEqualTo("알림 내용입니다.");
     assertThat(savedNotification.getTargetType()).isEqualTo(TargetType.REVIEW);
     assertThat(savedNotification.getTargetId()).isEqualTo(review.getId());
-    assertThat(savedNotification.getReadDate()).isNull();
+    assertThat(savedNotification.getReadAt()).isNull();
   }
 }
