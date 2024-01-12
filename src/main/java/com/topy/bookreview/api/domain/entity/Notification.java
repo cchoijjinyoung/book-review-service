@@ -2,6 +2,7 @@ package com.topy.bookreview.api.domain.entity;
 
 import com.topy.bookreview.api.domain.entity.type.NotificationType;
 import com.topy.bookreview.api.domain.entity.type.TargetType;
+import com.topy.bookreview.global.event.ReviewLikedEvent;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -46,7 +47,7 @@ public class Notification extends BaseTimeEntity {
   private NotificationType notificationType;
 
   @Column(nullable = true)
-  private LocalDateTime readDate;
+  private LocalDateTime readAt;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
@@ -54,4 +55,15 @@ public class Notification extends BaseTimeEntity {
 
   @Column(nullable = false)
   private Long targetId;
+
+  public static Notification of(ReviewLikedEvent event) {
+    return Notification.builder()
+        .receiver(event.getReceiver())
+        .caller(event.getCaller())
+        .content(event.getContent())
+        .notificationType(event.getNotificationType())
+        .targetType(event.getTargetType())
+        .targetId(event.getTargetId())
+        .build();
+  }
 }
