@@ -19,6 +19,7 @@ import com.topy.bookreview.redis.repository.AuthCodeRedisRepository;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +38,9 @@ public class AuthService {
 
   private final PasswordEncoder passwordEncoder;
 
+  @Value("${mail.verify.host}")
+  private String host;
+
   @Transactional
   public SignUpResponseDto signUp(SignUpRequestDto signUpRequestDto) {
     if (memberRepository.findByEmail(signUpRequestDto.getEmail()).isPresent()) {
@@ -53,7 +57,7 @@ public class AuthService {
 
     String authCode = UUID.randomUUID().toString();
 
-    mailSenderManager.sendMail(new AuthMailForm(savedMember.getEmail(), authCode));
+    mailSenderManager.sendMail(new AuthMailForm(savedMember.getEmail(), authCode, host));
     authCodeRedisRepository.saveByEmail(savedMember.getEmail(), authCode);
 
     return SignUpResponseDto.fromEntity(savedMember);

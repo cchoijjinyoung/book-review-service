@@ -11,9 +11,12 @@ public abstract class EmailForm {
 
   private final String text;
 
-  public EmailForm(String recipient, String subject, String text) {
+  private final String host;
+
+  public EmailForm(String recipient, String subject, String text, String host) {
     this.recipient = recipient;
     this.subject = subject;
     this.text = text;
+    this.host = host;
   }
 }
