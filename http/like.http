@@ -1,0 +1,7 @@
+### 리뷰 좋아요
+POST http://localhost:8080/likes/reviews/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjZ3k3MTI3QGdtYWlsLmNvbSIsImV4cCI6MTcwNTEwMjA2MCwiaWF0IjoxNzA1MDkxMjYwfQ.HcWh1tiSPfNHTZsc1MU0BL623bCZaJ5z5f8quhCqvp0
+
+### 리뷰 좋아요 취소
+DELETE http://localhost:8080/likes/reviews/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjZ3k3MTI3QGdtYWlsLmNvbSIsImV4cCI6MTcwNTEwMjA2MCwiaWF0IjoxNzA1MDkxMjYwfQ.HcWh1tiSPfNHTZsc1MU0BL623bCZaJ5z5f8quhCqvp0

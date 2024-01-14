@@ -1,10 +1,7 @@
 package com.topy.bookreview.api.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -12,9 +9,9 @@ import static org.mockito.Mockito.when;
 import com.topy.bookreview.api.component.SearchManager;
 import com.topy.bookreview.api.dto.BookSearchRequestDto;
 import com.topy.bookreview.api.dto.BookSearchResponseDto;
+import com.topy.bookreview.global.event.SearchDetailHistorySaveEvent;
 import com.topy.bookreview.global.event.SearchHistorySaveEvent;
 import com.topy.bookreview.global.exception.CustomException;
-import com.topy.bookreview.redis.repository.SearchHistoryRedisRepository;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,16 +25,13 @@ import org.springframework.context.ApplicationEventPublisher;
 class BookServiceTest {
 
   @InjectMocks
-  BookService bookService;
+  private BookService bookService;
 
   @Mock
-  SearchManager searchManager;
+  private SearchManager searchManager;
 
   @Mock
-  ApplicationEventPublisher eventPublisher;
-
-  @Mock
-  SearchHistoryRedisRepository searchHistoryRedisRepository;
+  private ApplicationEventPublisher eventPublisher;
 
   @Test
   @DisplayName("❗책 검색 시 조회된 검색결과가 없으면 예외를 던진다.")
@@ -70,43 +64,36 @@ class BookServiceTest {
 
     verify(searchManager, times(1)).searchActual(any(BookSearchRequestDto.class));
     verify(eventPublisher, times(1)).publishEvent(any(SearchHistorySaveEvent.class));
-    assertThat(responseDtoList).isEqualTo(result);
   }
 
   @Test
-  @DisplayName("책 검색 시 검색결과가 캐시에 없으면, 캐시에 저장되어야한다.")
-  void handleSaveCacheEventTest_when_emptyCache() {
+  @DisplayName("❗책 상세 검색 시 조회된 검색결과가 없으면 예외를 던진다.")
+  void searchBookByIsbnTest_fail_whenSearchResult_is_null() {
     // given
-    BookSearchRequestDto request = new BookSearchRequestDto("test", 1, 1, "accuracy");
-    BookSearchResponseDto response = new BookSearchResponseDto();
-    List<BookSearchResponseDto> responseDtoList = List.of(response);
-    SearchHistorySaveEvent event = new SearchHistorySaveEvent(request, responseDtoList);
+    String isbn = "1234567890123";
 
     // when
-    when(searchHistoryRedisRepository.get(request)).thenReturn(null);
-    doNothing().when(searchHistoryRedisRepository).save(request, responseDtoList);
-
+    when(searchManager.searchDetailActual(isbn)).thenReturn(null);
     // then
-    bookService.handleSaveSearchCacheEvent(event);
-    verify(searchHistoryRedisRepository, times(1)).get(any(BookSearchRequestDto.class));
-    verify(searchHistoryRedisRepository, times(1)).save(any(BookSearchRequestDto.class), any(List.class));
+    assertThatThrownBy(() -> bookService.searchBookByIsbn(isbn))
+        .isInstanceOf(CustomException.class)
+        .hasMessageContaining("조회된 결과가 없습니다.");
   }
 
   @Test
-  @DisplayName("책 검색 시 검색결과가 캐시에 있으면, 캐시에 저장되지 않는다.")
-  void handleSaveCacheEventTest_when_existCache() {
+  @DisplayName("책 상세 검색 성공")
+  void searchBookByIsbnTest_success() {
     // given
-    BookSearchRequestDto request = new BookSearchRequestDto("test", 1, 1, "accuracy");
+    String isbn = "1234567890123";
     BookSearchResponseDto response = new BookSearchResponseDto();
-    List<BookSearchResponseDto> responseDtoList = List.of(response);
-    SearchHistorySaveEvent event = new SearchHistorySaveEvent(request, responseDtoList);
 
     // when
-    when(searchHistoryRedisRepository.get(request)).thenReturn(responseDtoList);
+    when(searchManager.searchDetailActual(isbn)).thenReturn(response);
 
     // then
-    bookService.handleSaveSearchCacheEvent(event);
-    verify(searchHistoryRedisRepository, times(1)).get(any(BookSearchRequestDto.class));
-    verify(searchHistoryRedisRepository, never()).save(any(BookSearchRequestDto.class), any(List.class));
+    BookSearchResponseDto result = bookService.searchBookByIsbn(isbn);
+
+    verify(searchManager, times(1)).searchDetailActual(isbn);
+    verify(eventPublisher, times(1)).publishEvent(any(SearchDetailHistorySaveEvent.class));
   }
 }

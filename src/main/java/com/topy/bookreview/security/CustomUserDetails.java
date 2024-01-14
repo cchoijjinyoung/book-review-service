@@ -9,6 +9,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public class CustomUserDetails implements UserDetails {
 
+  private final Long id;
+
   private final String email;
 
   private final String password;
@@ -16,6 +18,7 @@ public class CustomUserDetails implements UserDetails {
   private final String roles;
 
   public CustomUserDetails(Member member) {
+    this.id = member.getId();
     this.email = member.getEmail();
     this.password = member.getPassword();
     this.roles = member.getRole().toString();
@@ -24,6 +27,10 @@ public class CustomUserDetails implements UserDetails {
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return List.of(new SimpleGrantedAuthority("ROLE_" + roles));
+  }
+
+  public Long getId() {
+    return id;
   }
 
   @Override
