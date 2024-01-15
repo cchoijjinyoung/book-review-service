@@ -1,10 +1,8 @@
 package com.topy.bookreview.security.handler;
 
-import static com.topy.bookreview.redis.Topic.CHANNEL_NOTIFICATION;
 import static jakarta.servlet.http.HttpServletResponse.SC_OK;
 
 import com.topy.bookreview.global.manager.JwtManager;
-import com.topy.bookreview.redis.listener.NotificationSubscriber;
 import com.topy.bookreview.redis.repository.RefreshTokenRedisRepository;
 import com.topy.bookreview.security.CustomUserDetails;
 import jakarta.servlet.ServletException;
@@ -14,8 +12,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.listener.ChannelTopic;
-import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
@@ -31,9 +27,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
   private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
-  private final RedisMessageListenerContainer messageListenerContainer;
 
-  private final NotificationSubscriber notificationSubscriber;
 
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -47,11 +41,6 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     String refreshToken = jwtManager.generateRefreshToken(authentication);
 
     refreshTokenRedisRepository.save(refreshToken);
-
-    String channelName = CHANNEL_NOTIFICATION.getPrefix() + principal.getId();
-    messageListenerContainer.addMessageListener(notificationSubscriber,
-        new ChannelTopic(channelName));
-    log.info("redis pub/sub 알림 채널 구독 ={}", channelName);
 
     Cookie refreshTokenCookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken);
     refreshTokenCookie.setHttpOnly(true);

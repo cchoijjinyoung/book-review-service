@@ -5,16 +5,12 @@ import static jakarta.servlet.http.HttpServletResponse.SC_OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.topy.bookreview.global.util.CookieUtils;
-import com.topy.bookreview.redis.Topic;
-import com.topy.bookreview.redis.listener.NotificationSubscriber;
 import com.topy.bookreview.redis.repository.RefreshTokenRedisRepository;
 import com.topy.bookreview.security.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.listener.ChannelTopic;
-import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
@@ -25,8 +21,6 @@ public class CustomLogoutHandler implements LogoutHandler {
   private final static String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
   private final RefreshTokenRedisRepository refreshTokenRedisRepository;
-  private final RedisMessageListenerContainer messageListenerContainer;
-  private final NotificationSubscriber notificationSubscriber;
 
   @Override
   public void logout(HttpServletRequest request, HttpServletResponse response,
@@ -35,10 +29,6 @@ public class CustomLogoutHandler implements LogoutHandler {
     log.info("로그아웃 중입니다...");
 
     CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
-
-    log.info("redis pub/sub 유저 알림 채널 구독 취소");
-    messageListenerContainer.removeMessageListener(notificationSubscriber,
-        new ChannelTopic(Topic.CHANNEL_NOTIFICATION.getPrefix() + principal.getId()));
 
     String refreshToken = CookieUtils.getCookieValue(request, REFRESH_TOKEN_COOKIE_NAME);
 

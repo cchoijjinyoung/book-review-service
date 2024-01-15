@@ -93,19 +93,21 @@ class ReviewControllerPermitRequestTest {
   - 즉, SseEmitter는 WAS 인스턴스 메모리내에만 존재한다.
   - 회원 A의 SseEmitter가 WAS-1에만 존재하면, 리뷰 좋아요 요청을 받은 WAS-2에서는 해당 알림을 받아야할 회원의 SseEmitter를 찾을 수 없게된다.
 - 그래서 Redis pub/sub을 같이 사용한다.
-  - B유저(id:1)가 로그인에 성공하면 Redis에 채널이름을 `notification:{id}` => "notification:1" 과 같이 생성하고, WAS는 생성된 Redis 채널을 구독한다.
+  - Redis에 채널이름을 `notification:{id}` => "notification:1" 와 같이 생성하고, WAS는 생성된 Redis 채널을 구독한다.
   - 리뷰 좋아요 발생 시, 작성자의 id값을 통해 채널에 알림을 보낸다(publish).
   - 해당 채널을 구독한 WAS는 publish된 알림데이터를 받을 수 있다. 그 후에는 알림데이터에서 `receiverId`를 추출하여 SseEmitter를 찾고 데이터를 담아서 `send()`한다.
 
 ### 이슈
 - 내 프로젝트내에서는 Redis pub/sub의 채널을 구독하는 과정을 로그인 성공 시 동작하도록 하였다.
   - 또한, 로그아웃 시에는 구독 취소가 동작한다.
-  - 그러다보니 로그인시와 로그아웃시에 채널이름을 생성하기 위해 현재 로그인한 `userId`가 필요했다.
-  - 내 프로젝트의 인증 과정은 `JwtAuthenticationFilter`에서 액세스/리프래시 토큰을 검증하고, 인증 객체를 생성하고, `SecurityContextHolder`에 저장함으로서 이루어진다.
-  - `LoginHandler`의 경우, `JwtAuthenticationFilter`보다 뒤에서 동작하기 때문에, context에 저장된 `Authentication` 객체를 사용하여 `userId`를 가져올 수 있었다.
-  - 다만, `LogoutHandler`는 `JwtAutheticationFilter`보다 앞에서 동작하고 있었기에, `userId`를 가져오지 못했다.
-  - 아무리 구글링을 해봐도 `LogoutHandler`를 `JwtAutheticationFilter` 앞에 두는 글은 찾지 못했다.
-  - 그래도 내 생각엔 앞에 두는 게 맞을 것 같아서 `LogoutHandler` 직전에 인증하도록 변경하였다.
+    - 그러다보니 로그인시와 로그아웃시에 채널이름을 생성하기 위해 현재 로그인한 `userId`가 필요했다.
+    - 내 프로젝트의 인증 과정은 `JwtAuthenticationFilter`에서 액세스/리프래시 토큰을 검증한 뒤, 인증 객체를 생성하고, `SecurityContextHolder`에 저장함으로서 이루어진다.
+    - '로그인 핸들링'의 경우, `JwtAuthenticationFilter`보다 뒤에서 동작하기 때문에, context에 저장된 `Authentication` 객체를 사용하여 `userId`를 가져올 수 있었다.
+    - 그러나, '로그아웃 핸들링'은 `JwtAutheticationFilter`보다 앞에서 동작하고 있었기에, `userId`를 가져오지 못했다.
+    - 아무리 구글링을 해봐도 `LogoutHandler`를 `JwtAutheticationFilter` 앞에 두는 글은 찾지 못했다.
+    - 그래도 내 생각엔 앞에 두는 게 맞을 것 같아서 `LogoutHandler` 직전에 인증하도록 변경하였다.
+  - [이 후 추가수정]: 구독/취소 시점을 '로그인/로그아웃 시점' -> 'SSE 연결/만료 시점'으로 변경하였다. 필터 위치를 변경하지 않고도 정상 동작할 수 있었다.
+ 
 - 내 프로젝트의 경우 Redis에 알림데이터를 publish할 때, `NotificationResponseDto` 객체를 발행한다.
   - 해당 객체의 필드에는 '읽음 유무'를 파악하기 위해 boolean타입의 `isRead`를 정의하였는데, 구독자가 데이터를 가져오면서 역직렬화할때, `isRead`가 아닌 `read`로 가져와졌다.
   - 대체로 직렬화하는 라이브러리들은 'getter 메서드' 이름을 기반으로 동작한다고 한다.

@@ -1,6 +1,5 @@
 package com.topy.bookreview.api.service;
 
-import static com.topy.bookreview.global.exception.ErrorCode.SSE_EMITTER_NOT_FOUND;
 import static com.topy.bookreview.redis.Topic.CHANNEL_NOTIFICATION;
 import static org.springframework.web.servlet.mvc.method.annotation.SseEmitter.event;
 
@@ -37,14 +36,15 @@ public class NotificationService {
   public void sendRealtime(String channel, NotificationResponseDto data) {
     log.info("sendRealtime 호출");
     String userId = channel.substring(CHANNEL_NOTIFICATION.getPrefix().length());
-    SseEmitter sseEmitter = sseEmitterRepository.get(userId)
-        .orElseThrow(() -> new CustomException(SSE_EMITTER_NOT_FOUND));
 
-    try {
-      sseEmitter.send(event().id(userId).name(NOTIFICATION_EVENT_NAME).data(data));
-    } catch (IOException e) {
-      sseEmitterRepository.deleteById(userId);
-      throw new CustomException(ErrorCode.NOTIFICATION_SEND_ERROR);
+    if (sseEmitterRepository.get(userId).isPresent()) {
+      SseEmitter sseEmitter = sseEmitterRepository.get(userId).get();
+      try {
+        sseEmitter.send(event().id(userId).name(NOTIFICATION_EVENT_NAME).data(data));
+      } catch (IOException e) {
+        sseEmitterRepository.deleteById(userId);
+        throw new CustomException(ErrorCode.NOTIFICATION_SEND_ERROR);
+      }
     }
   }
 }

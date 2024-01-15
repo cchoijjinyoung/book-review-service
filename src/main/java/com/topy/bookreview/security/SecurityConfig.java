@@ -66,8 +66,7 @@ public class SecurityConfig {
         .logout(c -> c
             .logoutUrl("/auth/signout")
             .addLogoutHandler(
-                new CustomLogoutHandler(refreshTokenRedisRepository, messageListenerContainer,
-                    notificationSubscriber))
+                new CustomLogoutHandler(refreshTokenRedisRepository))
             .logoutSuccessHandler(new CustomLogoutSuccessHandler()))
         .exceptionHandling(e -> {
               e.accessDeniedHandler(new ForbiddenHandler(objectMapper));
@@ -99,8 +98,7 @@ public class SecurityConfig {
         authenticationManager(), objectMapper);
 
     filter.setAuthenticationSuccessHandler(
-        new LoginSuccessHandler(jwtManager, refreshTokenRedisRepository, messageListenerContainer,
-            notificationSubscriber));
+        new LoginSuccessHandler(jwtManager, refreshTokenRedisRepository));
     filter.setAuthenticationFailureHandler(new LoginFailureHandler(objectMapper));
     return filter;
   }

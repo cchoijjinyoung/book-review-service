@@ -22,7 +22,7 @@ public class NotificationSubscriber implements MessageListener {
 
   @Override
   public void onMessage(Message message, byte[] pattern) {
-    log.info("NotificationSubscriber 호출");
+    log.info("NotificationSubscriber - onMessage 호출");
 
     String channel = new String(message.getChannel(), UTF_8);
 
