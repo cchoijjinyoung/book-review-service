@@ -20,13 +20,14 @@
     - 로그인하지 않은 사용자를 포함한 모든 사용자는 책을 검색할 수 있다. '네이버 검색 > 책 Search API'를 사용한다. https://developers.naver.com/docs/serviceapi/search/book/book.md#%EC%B1%85
     - 네이버 API 호출 장애 발생 시 사용자 경험을 위해 '서킷 브레이커 패턴'을 사용한다.
       - 검색 조건에 따른 검색결과를 캐시에 저장해두고, Open API에 오류가 발생하면 캐시에 있는 데이터로 응답한다.
-      - 만약 캐시에도 데이터가 존재하지 않다면, 카카오 책 검색 API를 사용하여 검색결과를 응답한다. 카카오 책 검색 API: https://developers.kakao.com/docs/latest/ko/daum-search/dev-guide#search-book
+      - 만약 캐시에도 데이터가 존재하지 않다면, 카카오 책 검색 API를 사용하여 검색결과를 응답한다.
+      - 카카오 책 검색 API: https://developers.kakao.com/docs/latest/ko/daum-search/dev-guide#search-book
     - 검색 결과는 기본적으로 '정확도 순'으로 정렬되며, 그 외 정렬으로는 '최근 출간일 순'이 있다.
     - 책 이미지, 제목, 저자, 판매가격, 출판사, 출간일을 볼 수 있고, 검색 결과가 많을 수 있으므로 paging 처리한다.
 
 - 책 상세 조회
     - 로그인하지 않은 사용자를 포함한 모든 사용자는 책을 상세 조회할 수 있다.
-    - 책의 상제 정보를 조회할 수 있다.
+    - 책의 상세 정보를 조회할 수 있다.
 
 - 책 리뷰 리스트 조회
     - 리뷰의 구성은 작성자의 닉네임, 별점, 내용, 좋아요 갯수, 작성 날짜로 구성된다.
@@ -69,9 +70,7 @@
 [go to the project retrospective section](doc/PROJECT_RETRO.md)
 
 ### 기술 스택
-<div align=center> 
-  <img src="https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white"> 
-  <img src="https://img.shields.io/badge/spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white"> 
-  <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white"> 
-  <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white">
-</div>
+<img src="https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white"> 
+<img src="https://img.shields.io/badge/spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white"> 
+<img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white"> 
+<img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white">
